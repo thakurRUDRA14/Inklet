@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
+import { signinInput, signupInput } from "@thakurrudra/inklet-common";
 
 type Bindings = {
     DATABASE_URL: string;
@@ -16,13 +17,20 @@ userRouter.post("/signup", async (c) => {
     }).$extends(withAccelerate());
 
     const body = await c.req.json();
+    const parsed = signupInput.safeParse(body);
+    if (!parsed.success) {
+        const firstError = parsed.error.issues[0];
+        return c.json({ message: firstError.message, path: firstError.path }, 400);
+    }
+
+    const { name, username, password } = parsed.data;
 
     try {
         const user = await prisma.user.create({
             data: {
-                name: body.name,
-                username: body.username,
-                password: body.password,
+                name,
+                username,
+                password,
             },
         });
 
@@ -40,12 +48,19 @@ userRouter.post("/signin", async (c) => {
     }).$extends(withAccelerate());
 
     const body = await c.req.json();
+    const parsed = signinInput.safeParse(body);
+    if (!parsed.success) {
+        const firstError = parsed.error.issues[0];
+        return c.json({ message: firstError.message, path: firstError.path }, 400);
+    }
+
+    const { username, password } = parsed.data;
 
     try {
         const user = await prisma.user.findFirst({
             where: {
-                username: body.username,
-                password: body.password,
+                username,
+                password,
             },
         });
 

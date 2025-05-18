@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { verify } from "hono/jwt";
+import { createBlogInput, updateBlogInput } from "@thakurrudra/inklet-common";
 
 type Bindings = {
     DATABASE_URL: string;
@@ -65,13 +66,11 @@ blogRouter.get("/:id", async (c) => {
         datasourceUrl: c.env.DATABASE_URL,
     }).$extends(withAccelerate());
 
-    const id =  c.req.param("id");
+    const id = c.req.param("id");
 
     try {
         const blog = await prisma.blog.findFirst({
-            where: {
-                id
-            },
+            where: { id },
         });
 
         if (!blog) {
@@ -91,13 +90,26 @@ blogRouter.post("/", async (c) => {
     }).$extends(withAccelerate());
 
     const body = await c.req.json();
+
+    const parsed = createBlogInput.safeParse(body);
+    if (!parsed.success) {
+        const firstError = parsed.error.issues[0];
+        return c.json({ message: firstError.message, path: firstError.path }, 400);
+    }
+
+    const { title, content } = parsed.data;
+
     const authorId = c.get("userId");
+    if (!authorId) {
+        return c.json({ message: "You are not authorized" }, 401);
+    }
+
     try {
         const blog = await prisma.blog.create({
             data: {
-                title: body.title,
-                content: body.content,
-                authorId: authorId,
+                title,
+                content,
+                authorId,
             },
         });
 
@@ -116,31 +128,33 @@ blogRouter.put("/", async (c) => {
     }).$extends(withAccelerate());
 
     const body = await c.req.json();
+    const parsed = updateBlogInput.safeParse(body);
+    if (!parsed.success) {
+        const firstError = parsed.error.issues[0];
+        return c.json({ message: firstError.message, path: firstError.path }, 400);
+    }
+
+    const { id, title, content } = parsed.data;
 
     try {
-        const blog = await prisma.blog.update({
-            where: {
-                id: body.id,
-            },
-            data: {
-                title: body.title,
-                content: body.content,
-            },
+        const updatedBlog = await prisma.blog.update({
+            where: { id },
+            data: { title, content },
         });
-
-        if (!blog) {
-            return c.json({ message: "Blog post not found" }, 404);
-        }
 
         return c.json(
             {
-                id: blog.id,
+                id: updatedBlog.id,
                 message: "Blog post updated successfully",
             },
             200
         );
-    } catch (error) {
-        console.log(error);
+    } catch (err: any) {
+        if (err.code === "P2025" || err.message?.includes("Record to update not found")) {
+            return c.json({ message: "Blog post not found" }, 404);
+        }
+
+        console.error("Update Error:", err);
         return c.json({ message: "Internal Server Error" }, 500);
     }
 });
@@ -170,5 +184,3 @@ blogRouter.delete("/", async (c) => {
         return c.json({ message: "Error while deleting the blog" }, 400);
     }
 });
-
-
