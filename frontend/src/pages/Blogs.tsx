@@ -1,46 +1,19 @@
 import BlogCard from '../components/BlogCard'
 import { motion } from 'framer-motion'
 import Navbar from '../components/Navbar'
+import { useBlogs } from '../hooks'
 
 const Blogs = () => {
-    const blogPosts = [
-        {
-            id: "1",
-            authorName: "Rudra Pratap Singh",
-            title: "Mastering React Hooks in 2025",
-            content: "Explore the latest React Hook patterns and best practices that will take your functional components to the next level. We'll cover everything from basic useState to advanced custom hook composition.",
-            publishedDate: "18th Mar 2025",
-            readTime: 4
-        },
-        {
-            id: "2",
-            authorName: "Jane Doe",
-            title: "The Future of CSS: What's Coming in 2025",
-            content: "With new CSS features like container queries, nesting, and color functions becoming widely supported, learn how to write more maintainable and powerful stylesheets.",
-            publishedDate: "15th Mar 2025",
-            readTime: 6
-        },
-        {
-            id: "3",
-            authorName: "John Smith",
-            title: "Building Micro-interactions with Framer Motion",
-            content: "Micro-interactions are the secret sauce of modern UX. In this guide, you'll learn how to implement delightful animations that respond to user input using Framer Motion.",
-            publishedDate: "10th Mar 2025",
-            readTime: 5
-        },
-        {
-            id: "4",
-            authorName: "Alex Johnson",
-            title: "TypeScript Patterns for Large Scale Apps",
-            content: "Discover advanced TypeScript techniques that help maintain type safety across large codebases, including utility types, discriminated unions, and type guards.",
-            publishedDate: "5th Mar 2025",
-            readTime: 7
-        },
-    ]
+    const { loading, blogs } = useBlogs()
+
+
+    if (loading) {
+        return <div>Loading...</div>
+    }
 
     return (
         <div>
-            <Navbar/>
+            <Navbar />
             <div className="min-h-screen dark:bg-black/90 py-8 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-5xl mx-auto">
                     <motion.div
@@ -50,14 +23,14 @@ const Blogs = () => {
                         className='grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-700 gap-6'
 
                     >
-                        {blogPosts.map((post) => (
+                        {blogs.map((blog) => (
                             <BlogCard
-                                key={post.id}
-                                id={post.id}
-                                authorName={post.authorName}
-                                title={post.title}
-                                content={post.content}
-                                publishedDate={post.publishedDate}
+                                key={blog.id}
+                                id={blog.id}
+                                authorName={blog.author.name}
+                                title={blog.title}
+                                content={blog.content}
+                                publishedDate={blog.updatedAt}
                             />
                         ))}
                     </motion.div>

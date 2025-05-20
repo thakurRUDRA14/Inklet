@@ -14,7 +14,7 @@ const Avatar = ({ name , size="small"}: AvatarProps)=> {
                 100, damping: 10 }}
         >
             <span className={`${size === "small" ?"text-xs":"text-md"} font-bold`}>
-                {name[0].toUpperCase()}
+                {name[0].toUpperCase() || "ANONYMOUS"}
             </span>
             <motion.div
                 className="absolute inset-0 border-2 border-transparent rounded-full"
