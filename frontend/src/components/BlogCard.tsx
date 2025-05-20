@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { Link } from 'react-router-dom'
+import Avatar from './Avatar'
 
 interface BlogCardProps {
     authorName: string
@@ -91,24 +92,6 @@ function Circle() {
             animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 2, repeat: Infinity }}
         />
-    )
-}
-
-function Avatar({ name }: { name: string }) {
-    return (
-        <motion.div
-            className="relative flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white"
-            whileHover={{ scale: 1.1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-        >
-            <span className="text-xs font-bold">
-                {name[0].toUpperCase()}
-            </span>
-            <motion.div
-                className="absolute inset-0 border-2 border-transparent rounded-full"
-                whileHover={{ borderColor: 'rgba(255,255,255,0.3)' }}
-            />
-        </motion.div>
     )
 }
 
