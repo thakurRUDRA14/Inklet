@@ -48,6 +48,18 @@ blogRouter.get("/all", async (c) => {
             orderBy: {
                 createdAt: "desc",
             },
+            select:{
+                content:true,
+                title:true,
+                id:true,
+                createdAt:true,
+                updatedAt:true,
+                author:{
+                    select:{
+                        name:true,  
+                    }
+                }
+            }
         });
         const total = await prisma.blog.count();
         const totalPages = Math.ceil(total / limit);
