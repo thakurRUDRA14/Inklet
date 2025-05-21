@@ -3,13 +3,17 @@ import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { signinInput, signupInput } from "@thakurrudra/inklet-common";
+import { verifyJWT } from "../middlewares/verifyJWT";
 
 type Bindings = {
     DATABASE_URL: string;
     JWT_SECRET: string;
 };
+type Variables = {
+    userId: string;
+};
 
-export const userRouter = new Hono<{ Bindings: Bindings }>();
+export const userRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 userRouter.post("/signup", async (c) => {
     const prisma = new PrismaClient({
@@ -67,10 +71,47 @@ userRouter.post("/signin", async (c) => {
         if (!user) {
             return c.json({ message: "Incorrect Credentials" }, 403);
         }
-        const jwt = await sign({ id: user.id }, c.env.JWT_SECRET);
-        return c.json({ jwt });
+        const token = await sign({ id: user.id }, c.env.JWT_SECRET);
+        return c.json({ user, token });
     } catch (error) {
         console.log(error);
         return c.json({ message: "Internal Server Error" }, 500);
+    }
+});
+
+userRouter.post("/me", verifyJWT, async (c) => {
+    const prisma = new PrismaClient({
+        datasourceUrl: c.env.DATABASE_URL,
+    }).$extends(withAccelerate());
+    try {
+        const userId = c.get("userId");
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                createdAt: true,
+                updatedAt: true,
+                password: false,
+            },
+        });
+        if (!user) {
+            return c.json({ error: "User not found" }, 404);
+        }
+
+        return c.json({
+            user,
+        });
+    } catch (error) {
+        console.error("Error in /me endpoint:", error);
+
+        if (error instanceof Error && error.message.includes("JWT")) {
+            return c.json({ error: "Unauthorized - Invalid token" }, 401);
+        }
+
+        return c.json({ error: "Internal Server Error" }, 500);
+    } finally {
+        await prisma.$disconnect();
     }
 });

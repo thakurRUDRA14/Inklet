@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { verify } from "hono/jwt";
 import { createBlogInput, updateBlogInput } from "@thakurrudra/inklet-common";
+import { verifyJWT } from "../middlewares/verifyJWT";
 
 type Bindings = {
     DATABASE_URL: string;
@@ -15,20 +15,7 @@ type Variables = {
 export const blogRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 //middleware to check if the user is authenticated
-blogRouter.use("/*", async (c, next) => {
-    const jwt = c.req.header("Authorization")?.split(" ")[1] || "";
-    if (!jwt) {
-        return c.json({ message: "You are not authorized" }, 401);
-    }
-    try {
-        const user = await verify(jwt, c.env.JWT_SECRET);
-        c.set("userId", user.id as string);
-        await next();
-    } catch (error) {
-        console.log(error);
-        return c.json({ message: "You are not authorized" }, 401);
-    }
-});
+blogRouter.use("/*", verifyJWT);
 
 //blog routes
 
