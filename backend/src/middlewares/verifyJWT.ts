@@ -25,6 +25,6 @@ export async function verifyJWT(c: Context, next: Function) {
         await next();
     } catch (err) {
         console.error("Auth error:", err);
-        return c.json({ error: "Unauthorized" }, 401);
+        return c.json({ error: "Unauthorized - Invalid token" }, 401);
     }
 }
