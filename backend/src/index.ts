@@ -2,14 +2,11 @@ import { Hono } from "hono";
 import { userRouter } from "./routes/user";
 import { blogRouter } from "./routes/blog";
 import {cors} from "hono/cors"
+import { prismaMiddleware } from "./middlewares/prisma";
 
-type Bindings = {
-    DATABASE_URL: string;
-    JWT_SECRET: string;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono();
 app.use('/*',cors())
+app.use('*', prismaMiddleware)
 app.route("/api/v1/user", userRouter);
 app.route("/api/v1/blog", blogRouter);
 

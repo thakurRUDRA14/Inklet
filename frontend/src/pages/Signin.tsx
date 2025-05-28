@@ -25,10 +25,11 @@ const Signin = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-        
+
         try {
             const response = await axios.post(`${BACKEND_URL}/user/signin`, formData)
-            const token = response.data.jwt;
+
+            const token = response.data.token;
             localStorage.setItem('token', token)
             navigate('/blogs')
         } catch (error) {
@@ -42,8 +43,8 @@ const Signin = () => {
     return (
         <div className="lg:grid lg:grid-cols-2 h-screen">
             <div>
-                <AuthForm 
-                    type="signin" 
+                <AuthForm
+                    type="signin"
                     formData={formData}
                     onInputChange={handleInputChange}
                     onSubmit={handleSubmit}

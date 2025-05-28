@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
 import { sign } from "hono/jwt";
 import { signinInput, signupInput } from "@thakurrudra/inklet-common";
 import { verifyJWT } from "../middlewares/verifyJWT";
@@ -12,14 +11,13 @@ type Bindings = {
 };
 type Variables = {
     userId: string;
+    prisma: PrismaClient;
 };
 
 export const userRouter = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 userRouter.post("/signup", async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
+    const prisma = c.get("prisma");
 
     const body = await c.req.json();
 
@@ -63,17 +61,11 @@ userRouter.post("/signup", async (c) => {
     } catch (error) {
         console.error("Signup error:", error);
         return c.json({ message: "Internal server error" }, 500);
-    } finally {
-        await prisma.$disconnect().catch((e) => {
-            console.error("Prisma disconnect error:", e);
-        });
     }
 });
 
 userRouter.post("/signin", async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
+    const prisma = c.get("prisma");
 
     const body = await c.req.json();
 
@@ -102,7 +94,7 @@ userRouter.post("/signin", async (c) => {
             return c.json({ message: "Invalid username or password" }, 401);
         }
 
-        const token = await sign(
+        const userToken = await sign(
             {
                 id: user.id,
                 exp: Math.floor(Date.now() / 1000) + 86400,
@@ -113,24 +105,17 @@ userRouter.post("/signin", async (c) => {
         const { password: _, ...userData } = user;
         return c.json({
             user: userData,
-            token,
+            userToken,
             expiresIn: "24h",
         });
     } catch (error) {
         console.error("Signin error:", error);
         return c.json({ message: "Internal server error" }, 500);
-    } finally {
-        await prisma.$disconnect().catch((e) => {
-            console.error("Prisma disconnect error:", e);
-        });
     }
 });
 
 userRouter.post("/me", verifyJWT, async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
-
+    const prisma = c.get("prisma");
     try {
         const userId = c.get("userId");
 
@@ -154,9 +139,5 @@ userRouter.post("/me", verifyJWT, async (c) => {
     } catch (error) {
         console.error("Get user error:", error);
         return c.json({ message: "Internal server error" }, 500);
-    } finally {
-        await prisma.$disconnect().catch((error) => {
-            console.error("Prisma disconnect error:", error);
-        });
     }
 });
