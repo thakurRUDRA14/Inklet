@@ -1,6 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { BACKEND_URL } from "../config";
+import axiosInstance from "../utils/axiosInstance";
 
 interface Blog {
     content: string;
@@ -17,15 +16,14 @@ export const useBlogs = () => {
     const [blogs, setBlogs] = useState<Blog[]>([]);
 
     useEffect(() => {
-        axios
-            .get(`${BACKEND_URL}/blog/all`, {
+        axiosInstance
+            .get("/blog/all", {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${localStorage.getItem("userToken")}`,
                 },
             })
             .then((response) => {
                 setBlogs(response.data.blogs);
-                console.log(blogs);
 
                 setLoading(false);
             });
