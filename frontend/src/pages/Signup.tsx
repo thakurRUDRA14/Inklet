@@ -3,17 +3,19 @@ import AuthForm from "../components/AuthForm";
 import Quote from "../components/Quote";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axiosInstance";
+import { useSignupUserMutation } from "../features/api/userApiSlice";
 
 const Signup = () => {
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState<SignupInput>({
         name: "",
         username: "",
         password: "",
         confirmPassword: "",
     });
-    const [isLoading, setIsLoading] = useState(false);
+
+    const [signupUser, { isLoading }] = useSignupUserMutation();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -32,18 +34,13 @@ const Signup = () => {
             return;
         }
 
-        setIsLoading(true);
-
         try {
-            const response = await axiosInstance.post("/user/signup", formData);
-            const token = response.data.jwt;
-            localStorage.setItem("token", token);
+            const userData = await signupUser(formData).unwrap();
+            localStorage.setItem("userToken", userData.userToken);
             navigate("/blogs");
-        } catch (error) {
-            console.error("Signin failed:", error);
-            // Handle error (show toast, etc.)
-        } finally {
-            setIsLoading(false);
+        } catch (err: any) {
+            const message = err?.data?.message || err?.error || "Signup failed. Please try again.";
+            alert(message);
         }
     };
 

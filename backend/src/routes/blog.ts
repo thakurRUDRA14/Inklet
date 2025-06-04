@@ -19,7 +19,7 @@ blogRouter.use("/*", verifyJWT);
 
 //blog routes
 
-blogRouter.get("/all", async (c) => {
+blogRouter.get("/", async (c) => {
     const prisma = c.get("prisma");
 
     try {
@@ -115,9 +115,10 @@ blogRouter.post("/", async (c) => {
     }
 });
 
-blogRouter.put("/", async (c) => {
+blogRouter.put("/:id", async (c) => {
     const prisma = c.get("prisma");
 
+    const id = c.req.param("id");
     const body = await c.req.json();
     const parsed = updateBlogInput.safeParse(body);
     if (!parsed.success) {
@@ -125,7 +126,7 @@ blogRouter.put("/", async (c) => {
         return c.json({ message: firstError.message, path: firstError.path }, 400);
     }
 
-    const { id, title, content } = parsed.data;
+    const { title, content } = parsed.data;
 
     try {
         const updatedBlog = await prisma.blog.update({
@@ -150,15 +151,15 @@ blogRouter.put("/", async (c) => {
     }
 });
 
-blogRouter.delete("/", async (c) => {
+blogRouter.delete("/:id", async (c) => {
     const prisma = c.get("prisma");
 
-    const body = await c.req.json();
+    const id = c.req.param("id");
 
     try {
         const blog = await prisma.blog.delete({
             where: {
-                id: body.id,
+                id: id,
             },
         });
 

@@ -114,7 +114,7 @@ userRouter.post("/signin", async (c) => {
     }
 });
 
-userRouter.post("/me", verifyJWT, async (c) => {
+userRouter.get("/me", verifyJWT, async (c) => {
     const prisma = c.get("prisma");
     try {
         const userId = c.get("userId");

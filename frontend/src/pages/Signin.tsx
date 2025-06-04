@@ -3,15 +3,21 @@ import AuthForm from "../components/AuthForm";
 import Quote from "../components/Quote";
 import type { SigninInput } from "@thakurrudra/inklet-common";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axiosInstance";
+import { useSigninUserMutation } from "../features/api/userApiSlice";
+import { useSetRecoilState } from "recoil";
+import { authTokenState, userState } from "../recoil/authAtoms";
 
 const Signin = () => {
     const navigate = useNavigate();
+
     const [formData, setFormData] = useState<SigninInput>({
         username: "",
         password: "",
     });
-    const [isLoading, setIsLoading] = useState(false);
+
+    const [signinUser, { isLoading }] = useSigninUserMutation();
+    const setToken = useSetRecoilState(authTokenState);
+    const setUser = useSetRecoilState(userState);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -23,19 +29,18 @@ const Signin = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
 
         try {
-            const response = await axiosInstance.post("/user/signin", formData);
+            const userData = await signinUser(formData).unwrap();
+            localStorage.setItem("userToken", userData.userToken);
+            setToken(userData.userToken);
+            setUser(userData.user);
+            alert("Login successful ✅");
 
-            const token = response.data.token;
-            localStorage.setItem("token", token);
             navigate("/blogs");
-        } catch (error) {
-            console.error("Signin failed:", error);
-            // Handle error (show toast, etc.)
-        } finally {
-            setIsLoading(false);
+        } catch (err: any) {
+            const message = err?.data?.message || err?.error || "Login failed. Please try again.";
+            alert(message);
         }
     };
 
