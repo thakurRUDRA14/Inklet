@@ -3,15 +3,20 @@ import NavBar from "../components/Navbar";
 
 export default function MainLayout() {
     const location = useLocation();
-    const hideNavOn = ["/signin", "/signout"];
+    const hideNavOn = ["/signin", "/signup"];
     const shouldHideNav = hideNavOn.includes(location.pathname);
 
     return (
-        <>
-            {!shouldHideNav && <NavBar />}
-            <div className='min-h-screen dark:bg-black/90 py-8 px-4 sm:px-6 lg:px-8'>
+        <div className='min-h-screen'>
+            {!shouldHideNav && (
+                <nav className='fixed top-0 left-0 right-0 z-50 h-16 bg-white dark:bg-slate-900 shadow-sm'>
+                    <NavBar />
+                </nav>
+            )}
+
+            <main className={`pt-16 min-h-screen ${shouldHideNav ? "pt-0" : ""}`}>
                 <Outlet />
-            </div>
-        </>
+            </main>
+        </div>
     );
 }

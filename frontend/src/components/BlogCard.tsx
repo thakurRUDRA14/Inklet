@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -62,14 +62,6 @@ const BlogCard = ({ authorName, title, content, publishedDate, id }: BlogCardPro
                             />
                             <span className='text-sm text-slate-500 dark:text-slate-400'>{`${Math.ceil(content.length / 200)} min(s) read`}</span>
                         </div>
-
-                        {/* <motion.button
-                        className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                        whileHover={{ x: 2 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        Read more →
-                    </motion.button> */}
                     </div>
                 </Link>
             </div>

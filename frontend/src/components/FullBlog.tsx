@@ -9,13 +9,13 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className='grid grid-cols-12 divide-x divide-slate-300 dark:divide-slate-700 max-w-5xl mx-auto gap-10 px-4 md:px-0'>
+            className='grid grid-cols-12 divide-y md:divide-x md:divide-y-0 divide-slate-300 dark:divide-slate-700 max-w-7xl min-h-[calc(100dvh-10rem)] mx-auto gap-10 px-4 md:px-0'>
             <motion.div className='col-span-12 md:col-span-8 p-4'>
                 <motion.h1
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
-                    className='text-3xl md:text-4xl font-extrabold'>
+                    className='text-4xl md:text-4xl font-extrabold'>
                     {blog.title}
                 </motion.h1>
 
@@ -23,7 +23,7 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className='text-sm text-slate-500 dark:text-slate-400 pt-2'>
+                    className='text-slate-500 dark:text-slate-400 pt-2'>
                     Published on {format(new Date(blog.createdAt), "MMM dd, yyyy")}
                 </motion.p>
 
@@ -31,7 +31,7 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.4 }}
-                    className='pt-6 prose dark:prose-invert prose-lg max-w-none'>
+                    className='pt-6 text-lg/8 text-slate-800 max-w-none'>
                     {blog.content}
                 </motion.div>
             </motion.div>
@@ -53,12 +53,12 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                     <div>
                         <motion.p
                             whileHover={{ x: 2 }}
-                            className='text-xl font-bold text-slate-800 dark:text-white'>
+                            className='text-2xl font-bold text-slate-800 dark:text-white'>
                             {blog.author.name || "Anonymous"}
                         </motion.p>
                         <motion.div
                             whileHover={{ x: 2 }}
-                            className='text-sm text-slate-500 dark:text-slate-300'>
+                            className='text-slate-500 dark:text-slate-300'>
                             Some catchy phrases
                         </motion.div>
                     </div>

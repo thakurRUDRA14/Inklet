@@ -1,16 +1,51 @@
+import { useState, useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import BlogCard from "../components/BlogCard";
 import { motion } from "motion/react";
 import { useGetAllBlogQuery } from "../features/api/blogApiSlice";
 import type { ApiError } from "../types/user";
+import type { Blog } from "../types/blog";
 
 const Blogs = () => {
-    const { data, isLoading, isError, error } = useGetAllBlogQuery();
+    const [page, setPage] = useState(1);
+    const limit = 10;
+    const { data, isLoading, isError, error, isFetching } = useGetAllBlogQuery({ page, limit });
+    const [blogs, setBlogs] = useState<Blog[]>([]);
+    const [hasMore, setHasMore] = useState(true);
+
+    // Merge new blogs with existing ones
+    useEffect(() => {
+        if (data?.blogs) {
+            setBlogs((prev) => {
+                const newBlogs = data.blogs.filter((newBlog) => !prev.some((blog) => blog.id === newBlog.id));
+                return [...prev, ...newBlogs];
+            });
+
+            // pagination check
+            setHasMore(data.blogs.length === limit && page <= (data.totalPages || Infinity));
+        }
+    }, [data, page]);
+
+    const fetchMoreData = () => {
+        if (!isFetching && hasMore) {
+            setPage((prev) => prev + 1);
+        }
+    };
+
+    // Reset state when component unmounts or filters change
+    useEffect(() => {
+        return () => {
+            setPage(1);
+            setBlogs([]);
+            setHasMore(true);
+        };
+    }, []);
 
     if (isError) {
         return <div className='text-center text-red-500 mt-10'>Error: {(error as ApiError)?.data.message || "Failed to load blogs."}</div>;
     }
 
-    if (isLoading || !data?.blogs) {
+    if (isLoading && blogs.length === 0) {
         return (
             <motion.div
                 initial={{ opacity: 0 }}
@@ -18,63 +53,46 @@ const Blogs = () => {
                 className='text-center text-lg font-medium mt-10'>
                 <div className='flex justify-center'>
                     <motion.div
-                        animate={{
-                            rotate: 360,
-                            scale: [1, 1.2, 1],
-                        }}
-                        transition={{
-                            repeat: Infinity,
-                            duration: 1.5,
-                            ease: "linear",
-                        }}
+                        animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                        transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
                         className='w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4'
                     />
                 </div>
-                Loading blog...
+                Loading blogs...
             </motion.div>
         );
     }
 
-    const blogs = data?.blogs;
-
     return (
-        <div className='max-w-5xl mx-auto'>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className='grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-700 gap-6'>
-                {blogs.map((blog) => (
-                    <BlogCard
-                        key={blog.id}
-                        id={blog.id}
-                        authorName={blog.author.name}
-                        title={blog.title}
-                        content={blog.content}
-                        publishedDate={blog.updatedAt}
-                    />
-                ))}
-            </motion.div>
-
-            <motion.div
-                className='mt-16 text-center'
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}>
-                <button className='inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-slate-900 transition-all duration-200 hover:scale-105'>
-                    Load more articles
-                    <svg
-                        className='ml-3 -mr-1 h-5 w-5'
-                        fill='currentColor'
-                        viewBox='0 0 20 20'>
-                        <path
-                            fillRule='evenodd'
-                            d='M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z'
-                            clipRule='evenodd'
+        <div className='max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full overflow-x-hidden'>
+            <InfiniteScroll
+                dataLength={blogs.length}
+                next={fetchMoreData}
+                hasMore={hasMore}
+                style={{ overflowX: "hidden" }}
+                loader={
+                    <div className='flex justify-center py-4'>
+                        <div className='w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin' />
+                    </div>
+                }
+                endMessage={<p className='text-center py-4 text-gray-500'>You've reached the end of the blog posts.</p>}>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className='grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-700 gap-6 w-full'>
+                    {blogs.map((blog) => (
+                        <BlogCard
+                            key={blog.id}
+                            id={blog.id}
+                            authorName={blog.author.name}
+                            title={blog.title}
+                            content={blog.content}
+                            publishedDate={blog.updatedAt}
                         />
-                    </svg>
-                </button>
-            </motion.div>
+                    ))}
+                </motion.div>
+            </InfiniteScroll>
         </div>
     );
 };

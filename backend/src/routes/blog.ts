@@ -47,12 +47,12 @@ blogRouter.get("/", async (c) => {
                 },
             },
         });
-        const total = await prisma.blog.count();
-        const totalPages = Math.ceil(total / limit);
+        const totalBlogs = await prisma.blog.count();
+        const totalPages = Math.ceil(totalBlogs / limit);
         if (blogs.length === 0) {
             return c.json({ message: "No blog posts found" }, 404);
         }
-        return c.json({ blogs, total, totalPages });
+        return c.json({ blogs, totalBlogs, totalPages });
     } catch (error) {
         console.log(error);
         return c.json({ message: "Error while fetching blog posts" }, 500);

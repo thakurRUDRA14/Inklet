@@ -24,8 +24,10 @@ export const blogApiSlice = createApi({
     },
     tagTypes: ["Blog"],
     endpoints: (builder) => ({
-        getAllBlog: builder.query<{ blogs: Blog[]; total: number; totalPages: number }, void>({
-            query: () => ({ url: `/blogs` }),
+        getAllBlog: builder.query<{ blogs: Blog[]; total: number; totalPages: number }, { page: number; limit: number }>({
+            query: ({ page, limit }) => ({
+                url: `/blogs?page=${page}&limit=${limit}`,
+            }),
             providesTags: ["Blog"],
         }),
         getBlogById: builder.query<{ blog: Blog }, string>({

@@ -44,7 +44,7 @@ const Blog = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className='py-10'>
+            className='py-12'>
             <FullBlog blog={blog} />
         </motion.div>
     );

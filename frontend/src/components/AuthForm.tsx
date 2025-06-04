@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import React from "react";
 import { Link } from "react-router-dom";
 
@@ -40,7 +40,7 @@ const AuthForm = ({ type, formData, onInputChange, onSubmit, isLoading }: AuthFo
                                 <Link
                                     to={type === "signup" ? "/signin" : "/signup"}
                                     className='pl-2 underline hover:text-blue-600 transition-colors duration-200'>
-                                    {type === "signup" ? "Login" : "Signup"}
+                                    {type === "signup" ? "Signin" : "Signup"}
                                 </Link>
                             </motion.p>
                         </motion.div>
