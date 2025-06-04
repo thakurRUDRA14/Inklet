@@ -28,7 +28,7 @@ export const blogApiSlice = createApi({
             query: () => ({ url: `/blogs` }),
             providesTags: ["Blog"],
         }),
-        getBlogById: builder.query<Blog, string>({
+        getBlogById: builder.query<{ blog: Blog }, string>({
             query: (id) => ({ url: `/blogs/${id}` }),
             providesTags: (result, error, id) => [{ type: "Blog", id }],
         }),

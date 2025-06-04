@@ -7,6 +7,7 @@ type Bindings = {
     DATABASE_URL: string;
     JWT_SECRET: string;
 };
+
 type Variables = {
     userId: string;
     prisma: PrismaClient;
@@ -66,6 +67,18 @@ blogRouter.get("/:id", async (c) => {
     try {
         const blog = await prisma.blog.findFirst({
             where: { id },
+            select: {
+                content: true,
+                title: true,
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                author: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
         });
 
         if (!blog) {
