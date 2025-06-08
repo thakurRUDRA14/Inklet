@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { createBlogInput, updateBlogInput } from "@thakurrudra/inklet-common";
+import sanitizeHtml from "sanitize-html";
 import { verifyJWT } from "../middlewares/verifyJWT";
 
 type Bindings = {
@@ -105,6 +106,50 @@ blogRouter.post("/", async (c) => {
 
     const { title, content } = parsed.data;
 
+    // Sanitize the HTML content
+    const sanitizedContent = sanitizeHtml(content, {
+        allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+            "img",
+            "h1",
+            "h2",
+            "h3",
+            "p",
+            "strong",
+            "em",
+            "ul",
+            "ol",
+            "li",
+            "a",
+            "blockquote",
+            "code",
+            "pre",
+        ]),
+        allowedAttributes: {
+            a: ["href", "name", "target", "rel"],
+            img: ["src", "alt", "width", "height"],
+            p: ["style", "class"],
+            blockquote: ["style", "class"],
+            pre: ["style", "class"],
+            code: ["style", "class"],
+        },
+        transformTags: {
+            a: (tagName, attribs) => {
+                // Ensure all links have target="_blank" and proper rel attributes
+                return {
+                    tagName,
+                    attribs: {
+                        ...attribs,
+                        target: "_blank",
+                        rel: attribs.rel || "noopener noreferrer",
+                    },
+                };
+            },
+        },
+        allowedSchemes: ["http", "https", "data"],
+        allowProtocolRelative: false,
+        enforceHtmlBoundary: true,
+    });
+
     const authorId = c.get("userId");
     if (!authorId) {
         return c.json({ message: "You are not authorized" }, 401);
@@ -114,7 +159,7 @@ blogRouter.post("/", async (c) => {
         const blog = await prisma.blog.create({
             data: {
                 title,
-                content,
+                content: sanitizedContent,
                 authorId,
             },
         });

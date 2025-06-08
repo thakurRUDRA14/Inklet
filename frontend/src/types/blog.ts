@@ -11,12 +11,7 @@ export interface Blog {
 export interface BlogInput {
     content: string;
     title: string;
-    id: string;
-    createdAt: string;
-    updatedAt: string;
-    author: {
-        name: string;
-    };
+    tags: string[];
 }
 
 export interface ApiError {

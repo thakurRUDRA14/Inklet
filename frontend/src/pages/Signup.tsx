@@ -4,6 +4,8 @@ import Quote from "../components/Quote";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignupUserMutation } from "../features/api/userApiSlice";
+import { useSetRecoilState } from "recoil";
+import { authTokenState, userState } from "../recoil/authAtoms";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -16,6 +18,8 @@ const Signup = () => {
     });
 
     const [signupUser, { isLoading }] = useSignupUserMutation();
+    const setToken = useSetRecoilState(authTokenState);
+    const setUser = useSetRecoilState(userState);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -28,7 +32,6 @@ const Signup = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Basic validation
         if (formData.password !== formData.confirmPassword) {
             alert("Passwords don't match!");
             return;
@@ -37,6 +40,8 @@ const Signup = () => {
         try {
             const userData = await signupUser(formData).unwrap();
             localStorage.setItem("userToken", userData.userToken);
+            setToken(userData.userToken);
+            setUser(userData.user);
             navigate("/blogs");
         } catch (err: any) {
             const message = err?.data?.message || err?.error || "Signup failed. Please try again.";

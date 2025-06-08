@@ -2,7 +2,9 @@ import { motion } from "motion/react";
 import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
+import DOMPurify from "dompurify";
 import Avatar from "./Avatar";
+import "./rich-text.css";
 
 interface BlogCardProps {
     authorName: string;
@@ -13,6 +15,7 @@ interface BlogCardProps {
 }
 
 const BlogCard = ({ authorName, title, content, publishedDate, id }: BlogCardProps) => {
+    const sanitizedContent = DOMPurify.sanitize(content);
     const [ref, inView] = useInView({
         triggerOnce: false,
         threshold: 0.4,
@@ -39,13 +42,16 @@ const BlogCard = ({ authorName, title, content, publishedDate, id }: BlogCardPro
                 </div>
                 <Link to={`/blogs/${id}`}>
                     <motion.h3
-                        className='text-xl font-extrabold text-black dark:text-white mb-3'
+                        className='text-2xl font-extrabold text-black dark:text-white mb-3 '
                         whileHover={{ color: "#3b82f6" }}
                         transition={{ duration: 0.2 }}>
                         {title}
                     </motion.h3>
 
-                    <p className='text-slate-600 dark:text-slate-300 mb-4 line-clamp-2'>{content}</p>
+                    <div
+                        className='blog-content text-slate-600 dark:text-slate-300 mb-4 line-clamp-2'
+                        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                    />
 
                     <div className='flex justify-between items-center'>
                         <div className='flex items-center gap-2'>

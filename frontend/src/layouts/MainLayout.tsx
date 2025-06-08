@@ -7,14 +7,10 @@ export default function MainLayout() {
     const shouldHideNav = hideNavOn.includes(location.pathname);
 
     return (
-        <div className='min-h-screen'>
-            {!shouldHideNav && (
-                <nav className='fixed top-0 left-0 right-0 z-50 h-16 bg-white dark:bg-slate-900 shadow-sm'>
-                    <NavBar />
-                </nav>
-            )}
+        <div className='min-h-screen flex flex-col'>
+            {!shouldHideNav && <NavBar />}
 
-            <main className={`pt-16 min-h-screen ${shouldHideNav ? "pt-0" : ""}`}>
+            <main className='flex-1 mx-auto w-screen'>
                 <Outlet />
             </main>
         </div>

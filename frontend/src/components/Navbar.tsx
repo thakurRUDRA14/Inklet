@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Avatar from "./Avatar";
 import { motion } from "motion/react";
+import { FaRegEdit } from "react-icons/fa";
 
 const Navbar = () => {
     return (
@@ -21,11 +22,18 @@ const Navbar = () => {
                 </motion.div>
             </div>
 
-            <div className='flex items-center space-x-4'>
-                <Avatar
-                    name='Rudra'
-                    size='big'
-                />
+            <div className='flex justify-end items-center gap-10'>
+                <Link
+                    to={"/new-story"}
+                    className='flex items-center gap-2 text-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'>
+                    <FaRegEdit /> Write
+                </Link>
+                <div className='flex items-center space-x-4'>
+                    <Avatar
+                        name='Rudra'
+                        size='small'
+                    />
+                </div>
             </div>
         </motion.div>
     );
