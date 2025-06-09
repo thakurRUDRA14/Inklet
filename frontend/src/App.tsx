@@ -8,6 +8,7 @@ import Blogs from "./pages/Blogs";
 import { useHydrateUser } from "./hooks/useHydrateUser";
 import MainLayout from "./layouts/MainLayout";
 import Publish from "./pages/Publish";
+import EditBlog from "./pages/EditBlog";
 
 function App() {
     useHydrateUser();
@@ -36,6 +37,10 @@ function App() {
                     <Route
                         path='/new-story'
                         element={<Publish />}
+                    />
+                    <Route
+                        path='/b/:id/edit'
+                        element={<EditBlog />}
                     />
                 </Route>
             </Routes>

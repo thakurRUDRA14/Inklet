@@ -15,8 +15,9 @@ const Editor = ({ title, setTitle, content, setContent, charCount, setCharCount 
     const quillRef = useRef<ReactQuill>(null);
     useEffect(() => {
         if (quillRef.current) {
-            const text = quillRef.current.getEditor().getText().trim();
-            setCharCount(text.length);
+            const text = quillRef.current.getEditor().getText();
+            const noWhitespaceText = text.replace(/\s+/g, "");
+            setCharCount(noWhitespaceText.length);
         }
     }, [content]);
 
@@ -37,17 +38,16 @@ const Editor = ({ title, setTitle, content, setContent, charCount, setCharCount 
 
     return (
         <>
-            <div className='space-y-2'>
-                <input
-                    type='text'
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder='Enter blog title here...'
-                    className='w-full text-xl font-semibold border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-1  focus:border-transparent'
-                />
-            </div>
-            <div className='space-y-2'>
-                <div className='border border-gray-300 rounded-lg overflow-visible'>
+            <input
+                type='text'
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder='Enter blog title here...'
+                className='w-full text-xl font-semibold border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-1  focus:border-transparent'
+            />
+
+            <div>
+                <div className='border border-gray-300 rounded-lg overflow-y-clip overflow-visible'>
                     <ReactQuill
                         ref={quillRef}
                         theme='snow'
@@ -56,10 +56,10 @@ const Editor = ({ title, setTitle, content, setContent, charCount, setCharCount 
                         placeholder='Write something amazing...'
                         modules={modules}
                         formats={formats}
-                        className='h-96'
+                        className='h-[32rem]'
                     />
                 </div>
-                <div className='flex justify-between items-center text-sm text-gray-500'>
+                <div className='flex justify-between items-center text-sm text-gray-500 p-2'>
                     <div>Character count: {charCount}</div>
                 </div>
             </div>

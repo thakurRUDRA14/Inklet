@@ -85,10 +85,12 @@ const Blogs = () => {
                         <BlogCard
                             key={blog.id}
                             id={blog.id}
+                            authorId={blog.author.id}
                             authorName={blog.author.name}
                             title={blog.title}
                             content={blog.content}
                             publishedDate={blog.updatedAt}
+                            onDelete={(id) => setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id))}
                         />
                     ))}
                 </motion.div>

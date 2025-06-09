@@ -1,21 +1,52 @@
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import DOMPurify from "dompurify";
 import Avatar from "./Avatar";
 import "./rich-text.css";
+import { useDeleteBlogMutation } from "../features/api/blogApiSlice";
+import { useState, useRef } from "react";
+import { useClickOutside } from "../hooks/useClickOutside";
+import { useRecoilValue } from "recoil";
+import { userState } from "../recoil/authAtoms";
+import Spinner from "./Spinner";
 
 interface BlogCardProps {
+    authorId: string;
     authorName: string;
     title: string;
     content: string;
     publishedDate: string;
     id: string;
+    onDelete: (id: string) => void;
 }
 
-const BlogCard = ({ authorName, title, content, publishedDate, id }: BlogCardProps) => {
+const BlogCard = ({ authorId, authorName, title, content, publishedDate, id, onDelete }: BlogCardProps) => {
     const sanitizedContent = DOMPurify.sanitize(content);
+    const user = useRecoilValue(userState);
+    const [deleteBlog, { isLoading }] = useDeleteBlogMutation();
+    const [showOption, setShowOption] = useState(false);
+    const optionsRef = useRef<HTMLDivElement>(null);
+    useClickOutside(optionsRef, () => setShowOption(false));
+
+    const handleOption = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowOption((val) => !val);
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteBlog(id).unwrap();
+            alert("Deleted successfully");
+            onDelete(id); // remove from UI
+        } catch (error) {
+            alert("Failed to delete blog");
+        } finally {
+            setShowOption(false);
+        }
+    };
+
     const [ref, inView] = useInView({
         triggerOnce: false,
         threshold: 0.4,
@@ -30,15 +61,61 @@ const BlogCard = ({ authorName, title, content, publishedDate, id }: BlogCardPro
             whileHover={{ y: -4 }}
             transition={{ type: "spring", stiffness: 200, damping: 20 }}>
             <div className='relative z-10'>
-                <div className='flex items-center gap-3 mb-4'>
-                    <Avatar name={authorName} />
-                    <div className='flex items-center gap-2 text-sm'>
-                        <span className='font-medium text-slate-700 dark:text-slate-300'>{authorName || "Anonymous"}</span>
-                        <Circle />
-                        <span className='text-slate-500 dark:text-slate-400'>
-                            {formatDistanceToNow(new Date(publishedDate), { addSuffix: true })}
-                        </span>
+                <div className='flex justify-between items-center mb-4 gap-2.5'>
+                    <div className='flex items-center gap-3'>
+                        <Avatar name={authorName} />
+                        <div className='flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm'>
+                            <span className='font-medium text-slate-700 dark:text-slate-300'>{authorName || "Anonymous"}</span>
+                            <span className='hidden sm:inline'>
+                                <div className='w-1 h-1 bg-slate-400 dark:bg-slate-500 rounded-full' />
+                            </span>
+                            <span className='text-slate-500 dark:text-slate-400'>
+                                {formatDistanceToNow(new Date(publishedDate), { addSuffix: true })}
+                            </span>
+                        </div>
                     </div>
+                    {authorId === user?.id && (
+                        <div
+                            className='relative'
+                            ref={optionsRef}>
+                            <div
+                                onClick={handleOption}
+                                className='flex gap-0.5 p-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full'>
+                                <div className='bg-slate-900 dark:bg-slate-500 w-1 h-1 rounded-full' />
+                                <div className='bg-slate-900 dark:bg-slate-500 w-1 h-1 rounded-full' />
+                                <div className='bg-slate-900 dark:bg-slate-500 w-1 h-1 rounded-full' />
+                            </div>
+                            <AnimatePresence>
+                                {showOption && (
+                                    <motion.div
+                                        layout
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className='absolute right-2 mt-0.5 flex flex-col border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-md shadow-lg overflow-hidden z-20'>
+                                        <Link
+                                            to={`/b/${id}/edit`}
+                                            className='text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200 text-sm px-4 py-2 text-left'>
+                                            Edit
+                                        </Link>
+                                        <motion.p
+                                            layout
+                                            onClick={handleDelete}
+                                            className='cursor-pointer text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-700 dark:hover:text-red-500 text-sm px-4 py-2 text-left'>
+                                            {isLoading ? (
+                                                <span className='flex items-center'>
+                                                    <Spinner className={"h-4 w-4 text-red"} />
+                                                    Deleting...
+                                                </span>
+                                            ) : (
+                                                "Delete"
+                                            )}
+                                        </motion.p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    )}
                 </div>
                 <Link to={`/blogs/${id}`}>
                     <motion.h3
@@ -74,15 +151,5 @@ const BlogCard = ({ authorName, title, content, publishedDate, id }: BlogCardPro
         </motion.div>
     );
 };
-
-function Circle() {
-    return (
-        <motion.div
-            className='w-1 h-1 bg-slate-400 dark:bg-slate-500 rounded-full'
-            animate={{ opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 2, repeat: Infinity }}
-        />
-    );
-}
 
 export default BlogCard;

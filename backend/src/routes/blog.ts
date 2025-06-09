@@ -43,6 +43,7 @@ blogRouter.get("/", async (c) => {
                 updatedAt: true,
                 author: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -76,6 +77,7 @@ blogRouter.get("/:id", async (c) => {
                 updatedAt: true,
                 author: {
                     select: {
+                        id: true,
                         name: true,
                     },
                 },
@@ -211,15 +213,33 @@ blogRouter.put("/:id", async (c) => {
 
 blogRouter.delete("/:id", async (c) => {
     const prisma = c.get("prisma");
-
     const id = c.req.param("id");
+    const userId = c.get("userId");
 
     try {
-        const blog = await prisma.blog.delete({
+        // Attempt to delete the blog directly with a condition
+        const blog = await prisma.blog.deleteMany({
             where: {
                 id: id,
+                authorId: userId,
             },
         });
+
+        // Check if any records were actually deleted
+        if (blog.count === 0) {
+            // Either blog didn't exist or user wasn't authorized
+            const exists = await prisma.blog.findUnique({
+                where: { id },
+                select: { id: true },
+            });
+
+            return c.json(
+                {
+                    message: exists ? "You are not authorized to delete this blog" : "Blog not found",
+                },
+                exists ? 401 : 404
+            );
+        }
 
         return c.json(
             {
@@ -229,6 +249,6 @@ blogRouter.delete("/:id", async (c) => {
         );
     } catch (error) {
         console.log(error);
-        return c.json({ message: "Error while deleting the blog" }, 400);
+        return c.json({ message: "Error while deleting the blog" }, 500);
     }
 });
