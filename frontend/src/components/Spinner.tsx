@@ -1,4 +1,4 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 const Spinner = ({ className }: { className?: string | undefined }) => {
     return (
         <AnimatePresence>

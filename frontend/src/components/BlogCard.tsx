@@ -1,10 +1,9 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useInView } from "react-intersection-observer";
 import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import DOMPurify from "dompurify";
 import Avatar from "./Avatar";
-import "./rich-text.css";
 import { useDeleteBlogMutation } from "../features/api/blogApiSlice";
 import { useState, useRef } from "react";
 import { useClickOutside } from "../hooks/useClickOutside";
@@ -104,7 +103,7 @@ const BlogCard = ({ authorId, authorName, title, content, publishedDate, id, onD
                                             className='cursor-pointer text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-700 dark:hover:text-red-500 text-sm px-4 py-2 text-left'>
                                             {isLoading ? (
                                                 <span className='flex items-center'>
-                                                    <Spinner className={"h-4 w-4 text-red"} />
+                                                    <Spinner className={"h-4 w-4 text-red-600"} />
                                                     Deleting...
                                                 </span>
                                             ) : (
@@ -126,7 +125,7 @@ const BlogCard = ({ authorId, authorName, title, content, publishedDate, id, onD
                     </motion.h3>
 
                     <div
-                        className='blog-content text-slate-600 dark:text-slate-300 mb-4 line-clamp-2'
+                        className='text-slate-600 dark:text-slate-300 mb-4 line-clamp-2'
                         dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                     />
 

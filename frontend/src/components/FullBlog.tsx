@@ -104,7 +104,14 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                             onClick={() => setShowDeleteConfirm((val) => !val)}
                             disabled={isLoading}
                             className='text-gray-900 bg-white border border-red-300 hover:bg-red-400 rounded-lg text-sm px-5 py-2.5 me-2 mb-2 hover:text-white'>
-                            {isLoading ? "Deleting" : "Delete"}
+                            {isLoading ? (
+                                <span className='flex items-center'>
+                                    <Spinner className={"h-4 w-4 text-red-500"} />
+                                    Deleting...
+                                </span>
+                            ) : (
+                                "Delete"
+                            )}
                         </button>
                     </div>
                 )}

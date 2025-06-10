@@ -55,9 +55,15 @@ blogRouter.get("/", async (c) => {
             return c.json({ message: "No blog posts found" }, 404);
         }
         return c.json({ blogs, totalBlogs, totalPages });
-    } catch (error) {
-        console.log(error);
-        return c.json({ message: "Error while fetching blog posts" }, 500);
+    } catch (error: any) {
+        console.error("Fetching Error:", error);
+        return c.json(
+            {
+                message: "Internal Server Error",
+                error: error.message,
+            },
+            500
+        );
     }
 });
 
@@ -89,9 +95,15 @@ blogRouter.get("/:id", async (c) => {
         }
 
         return c.json({ blog });
-    } catch (error) {
-        console.log(error);
-        return c.json({ message: "Error while fetching blog post" }, 500);
+    } catch (error: any) {
+        console.error("Fetching Error:", error);
+        return c.json(
+            {
+                message: "Internal Server Error",
+                error: error.message,
+            },
+            500
+        );
     }
 });
 
@@ -169,21 +181,37 @@ blogRouter.post("/", async (c) => {
         return c.json({
             id: blog.id,
         });
-    } catch (error) {
-        console.log(error);
-        return c.json({ message: "Internal Server Error" }, 500);
+    } catch (error: any) {
+        console.error("Post Error:", error);
+        return c.json(
+            {
+                message: "Internal Server Error",
+                error: error.message,
+            },
+            500
+        );
     }
 });
 
-blogRouter.put("/:id", async (c) => {
+blogRouter.patch("/:id", async (c) => {
     const prisma = c.get("prisma");
-
     const id = c.req.param("id");
+
+    if (!id || typeof id !== "string") {
+        return c.json({ message: "Invalid blog ID" }, 400);
+    }
+
     const body = await c.req.json();
+
     const parsed = updateBlogInput.safeParse(body);
     if (!parsed.success) {
-        const firstError = parsed.error.issues[0];
-        return c.json({ message: firstError.message, path: firstError.path }, 400);
+        return c.json(
+            {
+                message: "Validation failed",
+                errors: parsed.error.flatten(),
+            },
+            400
+        );
     }
 
     const { title, content } = parsed.data;
@@ -191,23 +219,35 @@ blogRouter.put("/:id", async (c) => {
     try {
         const updatedBlog = await prisma.blog.update({
             where: { id },
-            data: { title, content },
+            data: { title, content, updatedAt: new Date() },
+            select: {
+                id: true,
+                title: true,
+                content: true,
+                updatedAt: true,
+            },
         });
 
         return c.json(
             {
-                id: updatedBlog.id,
+                data: updatedBlog,
                 message: "Blog post updated successfully",
             },
             200
         );
-    } catch (err: any) {
-        if (err.code === "P2025" || err.message?.includes("Record to update not found")) {
+    } catch (error: any) {
+        if (error.code === "P2025" || error.message?.includes("Record to update not found")) {
             return c.json({ message: "Blog post not found" }, 404);
         }
 
-        console.error("Update Error:", err);
-        return c.json({ message: "Internal Server Error" }, 500);
+        console.error("Update Error:", error);
+        return c.json(
+            {
+                message: "Internal Server Error",
+                error: error.message,
+            },
+            500
+        );
     }
 });
 
@@ -247,8 +287,14 @@ blogRouter.delete("/:id", async (c) => {
             },
             200
         );
-    } catch (error) {
-        console.log(error);
-        return c.json({ message: "Error while deleting the blog" }, 500);
+    } catch (error: any) {
+        console.error("Delete Error:", error);
+        return c.json(
+            {
+                message: "Internal Server Error",
+                error: error.message,
+            },
+            500
+        );
     }
 });

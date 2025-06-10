@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { Blog, BlogInput } from "../../types/blog";
+import type { Blog } from "../../types/blog";
 import axiosInstance from "../../utils/axiosInstance";
+import type { CreateBlogInput, UpdateBlogInput } from "@thakurrudra/inklet-common";
 
 export const blogApiSlice = createApi({
     reducerPath: "blogApi",
@@ -34,7 +35,7 @@ export const blogApiSlice = createApi({
             query: (id) => ({ url: `/blogs/${id}` }),
             providesTags: (result, error, id) => [{ type: "Blog", id }],
         }),
-        createBlog: builder.mutation<Blog, BlogInput>({
+        createBlog: builder.mutation<Blog, CreateBlogInput>({
             query: (newBlog) => ({
                 url: "/blogs",
                 method: "POST",
@@ -42,11 +43,11 @@ export const blogApiSlice = createApi({
             }),
             invalidatesTags: ["Blog"],
         }),
-        updateBlog: builder.mutation<Blog, { id: string; data: Partial<BlogInput> }>({
-            query: ({ id, data }) => ({
+        updateBlog: builder.mutation<Blog, { updatedBlog: UpdateBlogInput; id: string }>({
+            query: ({ updatedBlog, id }) => ({
                 url: `/blogs/${id}`,
                 method: "PATCH",
-                data,
+                data: updatedBlog,
             }),
             invalidatesTags: (result, error, { id }) => [{ type: "Blog", id }],
         }),

@@ -25,7 +25,6 @@ export const createBlogInput = z.object({
 export const updateBlogInput = z.object({
     title: z.string().min(1),
     content: z.string().min(1),
-    id: z.string().min(1),
 });
 
 export type SignupInput = z.infer<typeof signupInput>;

@@ -10,7 +10,6 @@ const Publish = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [charCount, setCharCount] = useState(0);
-    const [tags, setTags] = useState<string[]>([]);
 
     const [createBlog, { isLoading, isError, error }] = useCreateBlogMutation();
 
@@ -19,11 +18,9 @@ const Publish = () => {
             await createBlog({
                 title,
                 content,
-                tags,
             }).unwrap();
             setTitle("");
             setContent("");
-            setTags([]);
             setCharCount(0);
             navigate("/blogs");
         } catch (err) {

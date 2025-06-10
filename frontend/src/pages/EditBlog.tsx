@@ -1,5 +1,147 @@
+import { useNavigate, useParams } from "react-router-dom";
+import Editor from "../components/Editor";
+import Spinner from "../components/Spinner";
+import { useEffect, useState } from "react";
+import { useGetBlogByIdQuery, useUpdateBlogMutation } from "../features/api/blogApiSlice";
+
 const EditBlog = () => {
-    return <div>EditBlog</div>;
+    const navigate = useNavigate();
+    const { id } = useParams<{ id: string }>();
+
+    const {
+        isLoading: isFetching,
+        data,
+        isError: isFetchError,
+        error: fetchError,
+    } = useGetBlogByIdQuery(id || "", {
+        skip: !id, // Skip if no ID
+        refetchOnMountOrArgChange: true,
+    });
+
+    const [updateBlog, { isLoading: isUpdating, isError: isUpdateError, error: updateError, isSuccess }] = useUpdateBlogMutation();
+
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
+    const [charCount, setCharCount] = useState(0);
+
+    // Initialize form with fetched data
+    useEffect(() => {
+        if (data?.blog) {
+            setTitle(data.blog.title);
+            setContent(data.blog.content);
+            setCharCount(data.blog.content.length);
+        }
+    }, [data]);
+
+    const handlePublish = async () => {
+        if (!id || !title.trim() || !content.trim()) {
+            alert("Title and content are required");
+            return;
+        }
+
+        try {
+            await updateBlog({
+                id,
+                updatedBlog: {
+                    title,
+                    content,
+                },
+            }).unwrap();
+
+            alert("Blog updated successfully");
+            navigate(`/blogs/${id}`);
+        } catch (err) {
+            console.error("Failed to update blog:", err);
+            alert("Failed to update blog");
+        }
+    };
+
+    if (isFetching) {
+        return (
+            <div className='max-w-4xl mx-auto p-6 space-y-6 animate-pulse'>
+                <div className='h-12 bg-gray-200 rounded w-1/3 mx-auto'></div>
+
+                <div className='space-y-2'>
+                    <div className='h-5 bg-gray-200 rounded w-1/4'></div>
+                    <div className='h-10 bg-gray-200 rounded'></div>
+                </div>
+
+                <div className='space-y-2'>
+                    <div className='h-5 bg-gray-200 rounded w-1/4'></div>
+                    <div className='h-64 bg-gray-200 rounded'></div>
+                    <div className='h-5 bg-gray-200 rounded w-1/6'></div>
+                </div>
+
+                <div className='flex justify-center gap-4 pt-4'>
+                    <div className='h-10 bg-gray-200 rounded-lg w-24'></div>
+                    <div className='h-10 bg-gray-200 rounded-lg w-36'></div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isFetchError) {
+        return (
+            <div className='max-w-4xl mx-auto p-6'>
+                <div className='text-red-500 text-center py-10'>
+                    {fetchError && "data" in fetchError
+                        ? (fetchError.data as { message?: string })?.message || "Failed to load blog"
+                        : "Failed to load blog"}
+                </div>
+                <button
+                    onClick={() => navigate(-1)}
+                    className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'>
+                    Go Back
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className='max-w-4xl mx-auto p-6 space-y-6'>
+            <h1 className='text-center text-5xl font-bold text-gray-800'>Edit Blog</h1>
+
+            <Editor
+                title={title}
+                setTitle={setTitle}
+                content={content}
+                setContent={setContent}
+                charCount={charCount}
+                setCharCount={setCharCount}
+            />
+
+            {isUpdateError && (
+                <div className='text-red-500 text-sm'>
+                    {updateError && "data" in updateError
+                        ? (updateError.data as { message?: string })?.message || "Failed to update blog"
+                        : "Failed to update blog"}
+                </div>
+            )}
+
+            <div className='flex justify-center gap-4'>
+                <button
+                    onClick={() => navigate(-1)}
+                    className='px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition'>
+                    Cancel
+                </button>
+                <button
+                    onClick={handlePublish}
+                    disabled={!title || !content || isUpdating}
+                    className={`px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ${
+                        !title || !content || isUpdating ? "opacity-50 cursor-not-allowed" : ""
+                    }`}>
+                    {isUpdating ? (
+                        <span className='flex items-center'>
+                            <Spinner className='h-6 w-6 text-white mr-2' />
+                            Publishing...
+                        </span>
+                    ) : (
+                        "Save and Publish"
+                    )}
+                </button>
+            </div>
+        </div>
+    );
 };
 
 export default EditBlog;
