@@ -17,4 +17,12 @@ export const authTokenState = atom<string | null>({
 export const userState = atom<User | null>({
     key: "userState",
     default: null,
+    effects_UNSTABLE: [
+        ({ onSet }) => {
+            onSet((user) => {
+                if (user) localStorage.setItem("user", JSON.stringify(user));
+                else localStorage.removeItem("user");
+            });
+        },
+    ],
 });

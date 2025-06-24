@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import axiosInstance from "../../utils/axiosInstance";
-import type { User, authResponse } from "../../types/user";
+import type { UpdatePassword, User, authResponse } from "../../types/user";
 
 export const userApiSlice = createApi({
     reducerPath: "userApi",
@@ -46,7 +46,22 @@ export const userApiSlice = createApi({
             }),
             invalidatesTags: ["User"],
         }),
+        updateUser: builder.mutation<User, Partial<User>>({
+            query: (formData) => ({
+                url: "/user/update",
+                method: "PATCH",
+                data: formData,
+            }),
+            invalidatesTags: ["User"],
+        }),
+        updatePassword: builder.mutation<User, UpdatePassword>({
+            query: (formData) => ({
+                url: "/user/update-password",
+                method: "PATCH",
+                data: formData,
+            }),
+        }),
     }),
 });
 
-export const { useGetUserQuery, useSigninUserMutation, useSignupUserMutation } = userApiSlice;
+export const { useGetUserQuery, useSigninUserMutation, useSignupUserMutation, useUpdateUserMutation, useUpdatePasswordMutation } = userApiSlice;

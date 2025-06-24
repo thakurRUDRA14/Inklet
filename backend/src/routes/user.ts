@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { PrismaClient } from "@prisma/client/edge";
 import { sign } from "hono/jwt";
-import { signinInput, signupInput } from "@thakurrudra/inklet-common";
+import { signinInput, signupInput, updateProfile, updatePassword } from "@thakurrudra/inklet-common";
 import { verifyJWT } from "../middlewares/verifyJWT";
 import bcrypt from "bcryptjs";
 
@@ -138,6 +138,89 @@ userRouter.get("/me", verifyJWT, async (c) => {
         return c.json({ user });
     } catch (error) {
         console.error("Get user error:", error);
+        return c.json({ message: "Internal server error" }, 500);
+    }
+});
+
+userRouter.patch("/update", verifyJWT, async (c) => {
+    const prisma = c.get("prisma");
+    const userId = c.get("userId");
+
+    const body = await c.req.json();
+    const parsed = updateProfile.safeParse(body);
+    if (!parsed.success) {
+        const errors = parsed.error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+        }));
+        return c.json({ errors }, 400);
+    }
+
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: parsed.data,
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+
+        return c.json(updatedUser);
+    } catch (error) {
+        console.error("Update user error:", error);
+        return c.json({ message: "Internal server error" }, 500);
+    }
+});
+
+userRouter.patch("/update-password", verifyJWT, async (c) => {
+    const prisma = c.get("prisma");
+    const userId = c.get("userId");
+
+    const body = await c.req.json();
+    const parsed = updatePassword.safeParse(body);
+    if (!parsed.success) {
+        const errors = parsed.error.issues.map((issue) => ({
+            field: issue.path.join("."),
+            message: issue.message,
+        }));
+        return c.json({ errors }, 400);
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            return c.json({ message: "User not found" }, 404);
+        }
+
+        const isOldPasswordValid = await bcrypt.compare(body.oldPassword, user.password);
+        if (!isOldPasswordValid) {
+            return c.json({ message: "Old password is incorrect" }, 401);
+        }
+
+        const hashedNewPassword = await bcrypt.hash(parsed.data.newPassword, 12);
+
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedNewPassword },
+            select: {
+                id: true,
+                name: true,
+                username: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+
+        return c.json(updatedUser);
+    } catch (error) {
+        console.error("Update password error:", error);
         return c.json({ message: "Internal server error" }, 500);
     }
 });

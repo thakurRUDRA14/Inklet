@@ -1,9 +1,13 @@
 import { Link } from "react-router-dom";
 import Avatar from "./Avatar";
 import { motion } from "motion/react";
-import { FaRegEdit } from "react-icons/fa";
+import { SquarePen } from "lucide-react";
+import { useRecoilValue } from "recoil";
+import { userState } from "../recoil/authAtoms";
 
 const Navbar = () => {
+    const user = useRecoilValue(userState);
+
     return (
         <motion.div
             initial={{ y: -100, opacity: 0 }}
@@ -26,14 +30,16 @@ const Navbar = () => {
                 <Link
                     to={"/new-story"}
                     className='flex items-center gap-2 text-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'>
-                    <FaRegEdit /> Write
+                    <SquarePen size={18} /> Write
                 </Link>
-                <div className='flex items-center space-x-4'>
+                <Link
+                    to='/u/profile'
+                    className='flex items-center space-x-4'>
                     <Avatar
-                        name='Rudra'
+                        name={user?.name}
                         size='small'
                     />
-                </div>
+                </Link>
             </div>
         </motion.div>
     );

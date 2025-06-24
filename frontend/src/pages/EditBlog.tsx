@@ -18,7 +18,7 @@ const EditBlog = () => {
         refetchOnMountOrArgChange: true,
     });
 
-    const [updateBlog, { isLoading: isUpdating, isError: isUpdateError, error: updateError, isSuccess }] = useUpdateBlogMutation();
+    const [updateBlog, { isLoading: isUpdating, isError: isUpdateError, error: updateError }] = useUpdateBlogMutation();
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -98,7 +98,7 @@ const EditBlog = () => {
     }
 
     return (
-        <div className='max-w-4xl mx-auto p-6 space-y-6'>
+        <div className='w-full lg:w-5xl mx-auto p-6 space-y-6'>
             <h1 className='text-center text-5xl font-bold text-gray-800'>Edit Blog</h1>
 
             <Editor

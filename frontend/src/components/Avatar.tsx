@@ -1,11 +1,11 @@
 import { motion } from "motion/react";
 
 interface AvatarProps {
-    name: string;
+    name?: string;
     size?: "small" | "big";
 }
 
-const Avatar = ({ name, size = "small" }: AvatarProps) => {
+const Avatar = ({ name = "R", size = "small" }: AvatarProps) => {
     return (
         <motion.div
             className={`relative flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white ${

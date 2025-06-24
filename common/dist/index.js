@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateBlogInput = exports.createBlogInput = exports.signinInput = exports.signupInput = void 0;
+exports.updateBlogInput = exports.createBlogInput = exports.updatePassword = exports.updateProfile = exports.signinInput = exports.signupInput = void 0;
 const zod_1 = __importDefault(require("zod"));
 exports.signupInput = zod_1.default
     .object({
@@ -19,6 +19,19 @@ exports.signupInput = zod_1.default
 exports.signinInput = zod_1.default.object({
     username: zod_1.default.string().email(),
     password: zod_1.default.string().min(8),
+});
+exports.updateProfile = zod_1.default.object({
+    name: zod_1.default.string().min(1, "Name is required").trim(),
+    username: zod_1.default.string().email(),
+});
+exports.updatePassword = zod_1.default
+    .object({
+    newPassword: zod_1.default.string().min(8, "New password must be at least 8 characters long").trim(),
+    confirmNewPassword: zod_1.default.string().min(8, "Confirm new password must be at least 8 characters long").trim(),
+})
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords don't match",
+    path: ["confirmNewPassword"],
 });
 exports.createBlogInput = zod_1.default.object({
     title: zod_1.default.string().min(1),
