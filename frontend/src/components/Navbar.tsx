@@ -1,19 +1,34 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Avatar from "./Avatar";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { SquarePen } from "lucide-react";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/authAtoms";
+import { useRef, useState } from "react";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 const Navbar = () => {
+    const navigate = useNavigate();
     const user = useRecoilValue(userState);
+    const [showUserActions, setShowUserActions] = useState(false);
+    const userActionsMenu = useRef<HTMLDivElement>(null);
+
+    useClickOutside(userActionsMenu, () => setShowUserActions(false));
+
+    const logout = () => {
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("user");
+        setShowUserActions(false);
+        navigate("/");
+        alert("User logged out");
+    };
 
     return (
         <motion.div
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 100, damping: 10 }}
-            className='border-b border-slate-200 flex justify-between items-center px-7 py-3 dark:border-slate-700 bg-white/80 backdrop-blur-sm sticky top-0 z-50'>
+            className='border-b border-slate-200 flex justify-between items-center px-5 md:px-15 py-3 dark:border-slate-700 bg-white/80 backdrop-blur-sm sticky top-0 z-50'>
             <div className='flex items-center space-x-8'>
                 <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -26,20 +41,51 @@ const Navbar = () => {
                 </motion.div>
             </div>
 
-            <div className='flex justify-end items-center gap-10'>
+            <div className='flex justify-end items-center gap-4 sm:gap-5 md:gap-10'>
                 <Link
                     to={"/new-story"}
                     className='flex items-center gap-2 text-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'>
-                    <SquarePen size={18} /> Write
+                    <SquarePen size={18} /> <span className='hidden sm:block'>Write</span>
                 </Link>
-                <Link
-                    to='/u/profile'
-                    className='flex items-center space-x-4'>
-                    <Avatar
-                        name={user?.name}
-                        size='small'
-                    />
-                </Link>
+                <div
+                    ref={userActionsMenu}
+                    className='relative'>
+                    <button
+                        onClick={() => setShowUserActions(!showUserActions)}
+                        className='cursor-pointer focus:outline-none'
+                        aria-label='User menu'>
+                        <Avatar
+                            name={user?.name}
+                            size='small'
+                        />
+                    </button>
+                    <AnimatePresence>
+                        {showUserActions && (
+                            <motion.div
+                                layout
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className='absolute right-5 mt-1 w-44 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-xl ring-1 ring-slate-200 dark:ring-slate-700 focus:outline-none z-50'>
+                                <Link
+                                    to='/u/profile'
+                                    className='block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition'>
+                                    Profile
+                                </Link>
+                                <Link
+                                    to='/my-blogs'
+                                    className='block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition'>
+                                    My Blogs
+                                </Link>
+                                <button
+                                    onClick={logout}
+                                    className='block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition'>
+                                    Logout
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
             </div>
         </motion.div>
     );

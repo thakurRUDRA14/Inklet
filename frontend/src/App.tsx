@@ -1,4 +1,3 @@
-// App.tsx
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Signup from "./pages/Signup";
@@ -10,6 +9,8 @@ import MainLayout from "./layouts/MainLayout";
 import Publish from "./pages/Publish";
 import EditBlog from "./pages/EditBlog";
 import Profile from "./pages/Profile";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicOnlyRoute from "./components/PublicOnlyRoute";
 
 function App() {
     useHydrateUser();
@@ -19,14 +20,27 @@ function App() {
             <Routes>
                 <Route
                     path='/signin'
-                    element={<Signin />}
+                    element={
+                        <PublicOnlyRoute>
+                            <Signin />
+                        </PublicOnlyRoute>
+                    }
                 />
                 <Route
                     path='/signup'
-                    element={<Signup />}
+                    element={
+                        <PublicOnlyRoute>
+                            <Signup />
+                        </PublicOnlyRoute>
+                    }
                 />
 
-                <Route element={<MainLayout />}>
+                <Route
+                    element={
+                        <ProtectedRoute>
+                            <MainLayout />
+                        </ProtectedRoute>
+                    }>
                     <Route
                         path='/blogs'
                         element={<Blogs />}
