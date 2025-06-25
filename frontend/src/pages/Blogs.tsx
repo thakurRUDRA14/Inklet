@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { useGetAllBlogQuery } from "../features/api/blogApiSlice";
 import type { ApiError } from "../types/user";
 import type { Blog } from "../types/blog";
+import BlogCardSkeleton from "../components/skeletons/BlogCardSkeleton";
 
 const Blogs = () => {
     const [page, setPage] = useState(1);
@@ -47,19 +48,13 @@ const Blogs = () => {
 
     if (isLoading && blogs.length === 0) {
         return (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className='text-center text-lg font-medium mt-10'>
-                <div className='flex justify-center'>
-                    <motion.div
-                        animate={{ rotate: 360, scale: [1, 1.2, 1] }}
-                        transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-                        className='w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4'
-                    />
+            <div className='max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full'>
+                <div className='grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-700 gap-6 w-full'>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                        <BlogCardSkeleton key={index} />
+                    ))}
                 </div>
-                Loading blogs...
-            </motion.div>
+            </div>
         );
     }
 
@@ -71,8 +66,10 @@ const Blogs = () => {
                 hasMore={hasMore}
                 style={{ overflowX: "hidden" }}
                 loader={
-                    <div className='flex justify-center py-4'>
-                        <div className='w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin' />
+                    <div className='grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-700 gap-6 w-full px-4'>
+                        {Array.from({ length: 2 }).map((_, index) => (
+                            <BlogCardSkeleton key={`more-${index}`} />
+                        ))}
                     </div>
                 }
                 endMessage={<p className='text-center py-4 text-gray-500'>You've reached the end of the blog posts.</p>}>

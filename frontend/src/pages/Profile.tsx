@@ -8,6 +8,7 @@ import { userState } from "../recoil/authAtoms";
 import { useUpdateUserMutation } from "../features/api/userApiSlice";
 import UpdatePasswordForm from "../components/UpdatePasswordForm";
 import type { ApiError } from "../types/user";
+import EditableInputSkeleton from "../components/skeletons/EditableInputSkeleton";
 
 const Profile: React.FC = () => {
     const [profile, setProfile] = useState<UpdateProfile>({
@@ -66,6 +67,26 @@ const Profile: React.FC = () => {
                 return field;
         }
     };
+
+    if (!user || !user.name || !user.username) {
+        return (
+            <div className='min-h-screen bg-gray-50 py-8'>
+                <div className='max-w-2xl mx-auto px-4'>
+                    <div className='text-center mb-8'>
+                        <div className='w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 animate-pulse' />
+                        <div className='h-6 w-1/2 bg-gray-300 mx-auto rounded mb-2 animate-pulse' />
+                        <div className='h-4 w-1/3 bg-gray-200 mx-auto rounded animate-pulse' />
+                    </div>
+
+                    <div className='space-y-6'>
+                        {[...Array(3)].map((_, index) => (
+                            <EditableInputSkeleton key={index} />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className='min-h-screen bg-gray-50 py-8'>

@@ -3,6 +3,7 @@ import { useGetBlogByIdQuery } from "../features/api/blogApiSlice";
 import FullBlog from "../components/FullBlog";
 import type { ApiError } from "../types/blog";
 import { motion } from "motion/react";
+import FullBlogSkeleton from "../components/skeletons/FullBlogSkeleton";
 
 const Blog = () => {
     const { id } = useParams();
@@ -14,26 +15,9 @@ const Blog = () => {
 
     if (isLoading || !data?.blog) {
         return (
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className='text-center text-lg font-medium mt-10'>
-                <div className='flex justify-center'>
-                    <motion.div
-                        animate={{
-                            rotate: 360,
-                            scale: [1, 1.2, 1],
-                        }}
-                        transition={{
-                            repeat: Infinity,
-                            duration: 1.5,
-                            ease: "linear",
-                        }}
-                        className='w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mb-4'
-                    />
-                </div>
-                Loading blog...
-            </motion.div>
+            <div className='py-12'>
+                <FullBlogSkeleton />
+            </div>
         );
     }
 

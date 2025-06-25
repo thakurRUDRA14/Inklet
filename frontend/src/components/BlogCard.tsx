@@ -94,13 +94,13 @@ const BlogCard = ({ authorId, authorName, title, content, publishedDate, id, onD
                                         className='absolute right-2 mt-0.5 flex flex-col border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-md shadow-lg overflow-hidden z-20'>
                                         <Link
                                             to={`/b/${id}/edit`}
-                                            className='text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200 text-sm px-4 py-2 text-left'>
+                                            className='text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-200 text-sm px-5 py-2 text-left'>
                                             Edit
                                         </Link>
                                         <motion.p
                                             layout
                                             onClick={handleDelete}
-                                            className='cursor-pointer text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-700 dark:hover:text-red-500 text-sm px-4 py-2 text-left'>
+                                            className='cursor-pointer text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-700 dark:hover:text-red-500 text-sm px-5 py-2 text-left'>
                                             {isLoading ? (
                                                 <span className='flex items-center'>
                                                     <Spinner className={"h-4 w-4 text-red-600"} />
