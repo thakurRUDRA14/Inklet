@@ -5,15 +5,21 @@ import Signin from "./pages/Signin";
 import Blog from "./pages/Blog";
 import Blogs from "./pages/Blogs";
 import { useHydrateUser } from "./hooks/useHydrateUser";
+import FullScreenLoader from "./components/FullScreenLoader";
 import MainLayout from "./layouts/MainLayout";
 import Publish from "./pages/Publish";
 import EditBlog from "./pages/EditBlog";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
+import MyBlogs from "./pages/MyBlog";
 
 function App() {
-    useHydrateUser();
+    const { loading } = useHydrateUser();
+
+    if (loading) {
+        return <FullScreenLoader />;
+    }
 
     return (
         <BrowserRouter>
@@ -60,6 +66,10 @@ function App() {
                     <Route
                         path='/u/profile'
                         element={<Profile />}
+                    />
+                    <Route
+                        path='/my-blogs'
+                        element={<MyBlogs />}
                     />
                 </Route>
             </Routes>

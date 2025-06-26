@@ -76,7 +76,7 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                 <motion.div className='flex items-center space-x-2 py-4'>
                     <div className='flex-shrink-0'>
                         <Avatar
-                            size='big'
+                            size='medium'
                             name={blog.author.name || "Anonymous"}
                         />
                     </div>

@@ -3,9 +3,9 @@ const BlogCardSkeleton = () => {
         <div className='p-6 animate-pulse space-y-4'>
             <div className='flex items-center gap-3'>
                 <div className='w-10 h-10 rounded-full bg-slate-300 dark:bg-slate-700' />
-                <div className='flex flex-col gap-1'>
-                    <div className='w-32 h-3 bg-slate-300 dark:bg-slate-700 rounded' />
-                    <div className='w-20 h-3 bg-slate-300 dark:bg-slate-700 rounded' />
+                <div className='flex flex-col md:flex-row gap-1'>
+                    <div className='w-15 h-3 bg-slate-300 dark:bg-slate-700 rounded' />
+                    <div className='w-30 h-3 bg-slate-300 dark:bg-slate-700 rounded' />
                 </div>
             </div>
             <div className='h-6 bg-slate-300 dark:bg-slate-700 rounded w-3/4' />

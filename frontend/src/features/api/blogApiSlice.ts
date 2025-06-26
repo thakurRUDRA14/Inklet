@@ -1,64 +1,69 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { Blog } from "../../types/blog";
-import axiosInstance from "../../utils/axiosInstance";
 import type { CreateBlogInput, UpdateBlogInput } from "@thakurrudra/inklet-common";
+import { axiosBaseQuery } from "./axiosBaseQuery";
 
 export const blogApiSlice = createApi({
     reducerPath: "blogApi",
-    baseQuery: async (args: { url: string; method?: string; data?: any }) => {
-        try {
-            const result = await axiosInstance({
-                url: args.url,
-                method: args.method || "GET",
-                data: args.data,
-            });
-            return { data: result.data };
-        } catch (axiosError) {
-            const err = axiosError as any;
-            return {
-                error: {
-                    status: err.response?.status,
-                    data: err.response?.data || err.message,
-                },
-            };
-        }
-    },
-    tagTypes: ["Blog"],
+    baseQuery: axiosBaseQuery,
+    tagTypes: ["Blog", "MyBlog"],
     endpoints: (builder) => ({
-        getAllBlog: builder.query<{ blogs: Blog[]; total: number; totalPages: number }, { page: number; limit: number }>({
+        getAllBlogs: builder.query<{ blogs: Blog[]; total: number; totalPages: number }, { page: number; limit: number }>({
             query: ({ page, limit }) => ({
                 url: `/blogs?page=${page}&limit=${limit}`,
             }),
-            providesTags: ["Blog"],
+            providesTags: (result) =>
+                result?.blogs ? [...result.blogs.map((blog) => ({ type: "Blog" as const, id: blog.id })), { type: "Blog" }] : [{ type: "Blog" }],
         }),
+
+        getMyBlogs: builder.query<{ blogs: Blog[]; total: number; totalPages: number }, { page: number; limit: number }>({
+            query: ({ page, limit }) => ({
+                url: `/blogs/my-blogs?page=${page}&limit=${limit}`,
+            }),
+            providesTags: (result) =>
+                result?.blogs
+                    ? [...result.blogs.map((blog) => ({ type: "MyBlog" as const, id: blog.id })), { type: "MyBlog" }]
+                    : [{ type: "MyBlog" }],
+        }),
+
         getBlogById: builder.query<{ blog: Blog }, string>({
             query: (id) => ({ url: `/blogs/${id}` }),
             providesTags: (result, error, id) => [{ type: "Blog", id }],
         }),
+
         createBlog: builder.mutation<Blog, CreateBlogInput>({
             query: (newBlog) => ({
                 url: "/blogs",
                 method: "POST",
                 data: newBlog,
             }),
-            invalidatesTags: ["Blog"],
+            invalidatesTags: ["Blog", "MyBlog"],
         }),
+
         updateBlog: builder.mutation<Blog, { updatedBlog: UpdateBlogInput; id: string }>({
             query: ({ updatedBlog, id }) => ({
                 url: `/blogs/${id}`,
                 method: "PATCH",
                 data: updatedBlog,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: "Blog", id }],
+            invalidatesTags: (result, error, { id }) => [
+                { type: "Blog", id },
+                { type: "MyBlog", id },
+            ],
         }),
+
         deleteBlog: builder.mutation<void, string>({
             query: (id) => ({
                 url: `/blogs/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: ["Blog"],
+            invalidatesTags: (result, error, id) => [
+                { type: "Blog", id },
+                { type: "MyBlog", id },
+            ],
         }),
     }),
 });
 
-export const { useGetAllBlogQuery, useGetBlogByIdQuery, useCreateBlogMutation, useUpdateBlogMutation, useDeleteBlogMutation } = blogApiSlice;
+export const { useGetAllBlogsQuery, useGetMyBlogsQuery, useGetBlogByIdQuery, useCreateBlogMutation, useUpdateBlogMutation, useDeleteBlogMutation } =
+    blogApiSlice;

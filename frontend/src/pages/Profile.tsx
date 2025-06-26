@@ -9,6 +9,7 @@ import { useUpdateUserMutation } from "../features/api/userApiSlice";
 import UpdatePasswordForm from "../components/UpdatePasswordForm";
 import type { ApiError } from "../types/user";
 import EditableInputSkeleton from "../components/skeletons/EditableInputSkeleton";
+import Avatar from "../components/Avatar";
 
 const Profile: React.FC = () => {
     const [profile, setProfile] = useState<UpdateProfile>({
@@ -96,13 +97,9 @@ const Profile: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}>
                     <div className='text-center mb-8'>
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                            className='w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center'>
-                            <User className='w-12 h-12 text-white' />
-                        </motion.div>
+                        <div className='mx-auto mb-4 flex items-center justify-center'>
+                            <Avatar size='big' />
+                        </div>
                         <h1 className='text-3xl font-bold text-gray-900 mb-2'>Profile Settings</h1>
                         <p className='text-gray-600'>Manage your account information</p>
                     </div>

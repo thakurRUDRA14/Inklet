@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Avatar from "./Avatar";
 import { AnimatePresence, motion } from "motion/react";
 import { SquarePen } from "lucide-react";
@@ -9,9 +9,27 @@ import { useClickOutside } from "../hooks/useClickOutside";
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const pathname = location.pathname;
+
     const user = useRecoilValue(userState);
     const [showUserActions, setShowUserActions] = useState(false);
     const userActionsMenu = useRef<HTMLDivElement>(null);
+    const userActions = [
+        {
+            to: "/u/profile",
+            title: "Profile",
+        },
+        {
+            to: "/blogs",
+            title: "Blogs",
+        },
+        {
+            to: "/my-blogs",
+            title: "My Blogs",
+        },
+    ];
 
     useClickOutside(userActionsMenu, () => setShowUserActions(false));
 
@@ -42,11 +60,15 @@ const Navbar = () => {
             </div>
 
             <div className='flex justify-end items-center gap-4 sm:gap-5 md:gap-10'>
-                <Link
-                    to={"/new-story"}
-                    className='flex items-center gap-2 text-md text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'>
-                    <SquarePen size={18} /> <span className='hidden sm:block'>Write</span>
-                </Link>
+                {pathname != "/new-story" && pathname != "/my-blogs" && (
+                    <motion.span layoutId='write'>
+                        <Link
+                            to={"/new-story"}
+                            className='flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'>
+                            <SquarePen size={18} /> <span className='hidden sm:block'>Write</span>
+                        </Link>
+                    </motion.span>
+                )}
                 <div
                     ref={userActionsMenu}
                     className='relative'>
@@ -67,16 +89,16 @@ const Navbar = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -10 }}
                                 className='absolute right-5 mt-1 w-44 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-xl ring-1 ring-slate-200 dark:ring-slate-700 focus:outline-none z-50'>
-                                <Link
-                                    to='/u/profile'
-                                    className='block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition'>
-                                    Profile
-                                </Link>
-                                <Link
-                                    to='/my-blogs'
-                                    className='block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition'>
-                                    My Blogs
-                                </Link>
+                                {userActions.map(
+                                    (action) =>
+                                        pathname != action.to && (
+                                            <Link
+                                                to={action.to}
+                                                className='block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition'>
+                                                {action.title}
+                                            </Link>
+                                        )
+                                )}
                                 <button
                                     onClick={logout}
                                     className='block w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition'>

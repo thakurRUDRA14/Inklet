@@ -52,7 +52,57 @@ blogRouter.get("/", async (c) => {
         const totalBlogs = await prisma.blog.count();
         const totalPages = Math.ceil(totalBlogs / limit);
         if (blogs.length === 0) {
-            return c.json({ message: "No blog posts found" }, 404);
+            return c.json({ message: "User has no blog posts" }, 200);
+        }
+        return c.json({ blogs, totalBlogs, totalPages });
+    } catch (error: any) {
+        console.error("Fetching Error:", error);
+        return c.json(
+            {
+                message: "Internal Server Error",
+                error: error.message,
+            },
+            500
+        );
+    }
+});
+
+blogRouter.get("/my-blogs", async (c) => {
+    const prisma = c.get("prisma");
+
+    try {
+        const authorId = c.get("userId");
+        const page = parseInt(c.req.query("page") as string) || 1;
+        const limit = parseInt(c.req.query("limit") as string) || 10;
+        const skip = (page - 1) * limit;
+        const take = limit;
+        const blogs = await prisma.blog.findMany({
+            where: {
+                authorId,
+            },
+            skip,
+            take,
+            orderBy: {
+                createdAt: "desc",
+            },
+            select: {
+                content: true,
+                title: true,
+                id: true,
+                createdAt: true,
+                updatedAt: true,
+                author: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+        const totalBlogs = await prisma.blog.count({ where: { authorId } });
+        const totalPages = Math.ceil(totalBlogs / limit);
+        if (blogs.length === 0) {
+            return c.json({ message: "User has no blog posts" }, 200);
         }
         return c.json({ blogs, totalBlogs, totalPages });
     } catch (error: any) {

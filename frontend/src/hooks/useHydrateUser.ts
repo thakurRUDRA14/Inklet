@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { authTokenState, userState } from "../recoil/authAtoms";
 import axiosInstance from "../utils/axiosInstance";
 
 export const useHydrateUser = () => {
+    const [loading, setLoading] = useState(true);
     const setUser = useSetRecoilState(userState);
     const setAuthToken = useSetRecoilState(authTokenState);
 
@@ -24,9 +25,15 @@ export const useHydrateUser = () => {
                     setUser(null);
                     setAuthToken(null);
                 }
+            } else {
+                setUser(null);
+                setAuthToken(null);
             }
+            setLoading(false);
         };
 
         fetchUser();
-    }, [setUser, setAuthToken]);
+    }, []);
+
+    return { loading };
 };
