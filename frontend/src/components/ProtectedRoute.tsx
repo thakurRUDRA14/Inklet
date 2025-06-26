@@ -1,12 +1,12 @@
 import { Navigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
-import { userState } from "../recoil/authAtoms";
 import type { ReactNode } from "react";
+import { isAuthenticatedSelector } from "../recoil/authSelector";
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-    const user = useRecoilValue(userState);
+    const isAuthenticated = useRecoilValue(isAuthenticatedSelector);
 
-    if (!user) {
+    if (!isAuthenticated) {
         return (
             <Navigate
                 to='/signin'

@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
 import MyBlogs from "./pages/MyBlog";
 import Home from "./pages/Home";
+import About from "./pages/About";
 
 function App() {
     const { loading } = useHydrateUser();
@@ -29,6 +30,10 @@ function App() {
                     <Route
                         path='/'
                         element={<Home />}
+                    />
+                    <Route
+                        path='/about'
+                        element={<About />}
                     />
                     <Route
                         path='/signin'

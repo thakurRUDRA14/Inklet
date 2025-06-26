@@ -60,14 +60,14 @@ const Navbar = () => {
             </div>
 
             <div className='flex justify-end items-center gap-4 sm:gap-5 md:gap-10'>
-                {(pathname == "/signin" || pathname == "/signup") && (
+                {(pathname === "/signin" || pathname === "/signup" || pathname === "/about") && (
                     <Link
                         to='/'
                         className='text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition'>
                         Home
                     </Link>
                 )}
-                {pathname == "/" && (
+                {(pathname === "/signin" || pathname === "/signup" || pathname === "/") && (
                     <Link
                         to='/about'
                         className='text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition'>
