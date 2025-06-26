@@ -9,7 +9,7 @@ export const userApiSlice = createApi({
     endpoints: (builder) => ({
         getUser: builder.query<User, void>({
             query: () => ({ url: "/user/me", method: "GET" }),
-            providesTags: ["User"],
+            providesTags: (result) => (result ? ["User"] : []),
         }),
 
         signinUser: builder.mutation<authResponse, Partial<User>>({
@@ -18,7 +18,7 @@ export const userApiSlice = createApi({
                 method: "POST",
                 data: formData,
             }),
-            invalidatesTags: ["User"],
+            invalidatesTags: (_result, error) => (error ? [] : ["User"]),
         }),
 
         signupUser: builder.mutation<authResponse, Partial<User>>({
@@ -27,7 +27,7 @@ export const userApiSlice = createApi({
                 method: "POST",
                 data: formData,
             }),
-            invalidatesTags: ["User"],
+            invalidatesTags: (_result, error) => (error ? [] : ["User"]),
         }),
 
         updateUser: builder.mutation<User, Partial<User>>({
@@ -36,7 +36,7 @@ export const userApiSlice = createApi({
                 method: "PATCH",
                 data: formData,
             }),
-            invalidatesTags: ["User"],
+            invalidatesTags: (_result, error) => (error ? [] : ["User"]),
         }),
 
         updatePassword: builder.mutation<User, UpdatePassword>({
@@ -45,7 +45,7 @@ export const userApiSlice = createApi({
                 method: "PATCH",
                 data: formData,
             }),
-            invalidatesTags: ["User"],
+            invalidatesTags: (_result, error) => (error ? [] : ["User"]),
         }),
     }),
 });

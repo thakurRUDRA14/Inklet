@@ -28,7 +28,7 @@ export const blogApiSlice = createApi({
 
         getBlogById: builder.query<{ blog: Blog }, string>({
             query: (id) => ({ url: `/blogs/${id}` }),
-            providesTags: (result, error, id) => [{ type: "Blog", id }],
+            providesTags: (_result, _error, id) => [{ type: "Blog", id }],
         }),
 
         createBlog: builder.mutation<Blog, CreateBlogInput>({
@@ -37,7 +37,7 @@ export const blogApiSlice = createApi({
                 method: "POST",
                 data: newBlog,
             }),
-            invalidatesTags: ["Blog", "MyBlog"],
+            invalidatesTags: (_result, error) => (error ? [] : ["Blog", "MyBlog"]),
         }),
 
         updateBlog: builder.mutation<Blog, { updatedBlog: UpdateBlogInput; id: string }>({
@@ -46,10 +46,13 @@ export const blogApiSlice = createApi({
                 method: "PATCH",
                 data: updatedBlog,
             }),
-            invalidatesTags: (result, error, { id }) => [
-                { type: "Blog", id },
-                { type: "MyBlog", id },
-            ],
+            invalidatesTags: (_result, error, { id }) =>
+                error
+                    ? []
+                    : [
+                          { type: "Blog", id },
+                          { type: "MyBlog", id },
+                      ],
         }),
 
         deleteBlog: builder.mutation<void, string>({
@@ -57,10 +60,13 @@ export const blogApiSlice = createApi({
                 url: `/blogs/${id}`,
                 method: "DELETE",
             }),
-            invalidatesTags: (result, error, id) => [
-                { type: "Blog", id },
-                { type: "MyBlog", id },
-            ],
+            invalidatesTags: (_result, error, id) =>
+                error
+                    ? []
+                    : [
+                          { type: "Blog", id },
+                          { type: "MyBlog", id },
+                      ],
         }),
     }),
 });

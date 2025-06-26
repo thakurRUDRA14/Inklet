@@ -7,7 +7,6 @@ const FullBlogSkeleton = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className='grid grid-cols-12 divide-y md:divide-x md:divide-y-0 divide-slate-300 dark:divide-slate-700 w-full lg:max-w-7xl min-h-[calc(100dvh-10rem)] mx-auto gap-10 px-4 xl:px-0 animate-pulse'>
-            {/* Blog Content Section */}
             <div className='col-span-12 md:col-span-8 p-4'>
                 <div className='h-12 w-3/4 bg-slate-300 dark:bg-slate-700 rounded mb-4'></div>
                 <div className='h-5 w-1/2 bg-slate-200 dark:bg-slate-600 rounded mb-6'></div>
@@ -20,7 +19,6 @@ const FullBlogSkeleton = () => {
                 </div>
             </div>
 
-            {/* Author & Sidebar */}
             <div className='col-span-12 md:col-span-4 sticky top-[6rem] h-fit'>
                 <div className='h-6 w-24 bg-slate-300 dark:bg-slate-600 rounded mb-4'></div>
                 <div className='flex items-center space-x-3 py-4'>
