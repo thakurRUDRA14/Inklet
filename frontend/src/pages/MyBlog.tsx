@@ -51,7 +51,7 @@ export default function MyBlogs() {
     }, []);
 
     return (
-        <div className='w-full mx-auto px-5 md:px-15 py-5'>
+        <div className='w-full mx-auto px-5 md:px-15 py-3'>
             <div className='sticky top-14 h-15 flex items-center justify-between mb-6 bg-white/80 backdrop-blur-sm z-20'>
                 <h1 className='text-3xl font-bold'>My Blogs</h1>
                 <motion.span layoutId='write'>
@@ -62,7 +62,7 @@ export default function MyBlogs() {
                     </Link>
                 </motion.span>
             </div>
-            <div className='flex flex-col lg:flex-row lg:divide-x divide-slate-200 dark:divide-slate-700 gap-8 mt-10'>
+            <div className='flex flex-col lg:flex-row lg:divide-x divide-slate-200 dark:divide-slate-700 gap-8'>
                 <div className='lg:w-2/3'>
                     {isError ? (
                         <ErrorBox
@@ -121,7 +121,7 @@ export default function MyBlogs() {
                         </div>
                     )}
                 </div>
-                <div className='hidden lg:block lg:w-1/3 lg:sticky lg:top-44 lg:h-[calc(100vh-15rem)] lg:overflow-y-auto'>
+                <div className='hidden lg:block lg:w-1/3 lg:sticky lg:top-44 lg:h-[calc(100vh-13rem)] lg:overflow-y-auto'>
                     {isLoading ? (
                         <MyBlogProfileSkeleton />
                     ) : (

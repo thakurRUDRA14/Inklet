@@ -11,6 +11,7 @@ import { userState } from "../recoil/authAtoms";
 import { Link, useNavigate } from "react-router-dom";
 import { useDeleteBlogMutation } from "../features/api/blogApiSlice";
 import Spinner from "./Spinner";
+import { toast } from "react-toastify";
 
 const FullBlog = ({ blog }: { blog: Blog }) => {
     const navigate = useNavigate();
@@ -25,10 +26,10 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
     const handleDelete = async () => {
         try {
             await deleteBlog(blog.id).unwrap();
-            alert("Deleted successfully");
+            toast("Blog deleted successfully");
             navigate("/blogs");
         } catch (error) {
-            alert("Failed to delete blog");
+            toast.error("Failed to delete blog");
         } finally {
             setShowDeleteConfirm(false);
         }
@@ -39,7 +40,7 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className='grid grid-cols-12 divide-y md:divide-x md:divide-y-0 divide-slate-300 dark:divide-slate-700 max-w-7xl min-h-[calc(100dvh-10rem)] mx-auto gap-10 px-4 xl:px-0'>
+            className='grid grid-cols-12 divide-y md:divide-x md:divide-y-0 divide-slate-300 dark:divide-slate-700 max-w-7xl min-h-[calc(100dvh-10rem)] mx-auto gap-y-5 md:gap-x-10 px-4 xl:px-0'>
             <motion.div className='col-span-12 md:col-span-8 p-4'>
                 <motion.h1
                     initial={{ opacity: 0, x: -20 }}
@@ -89,7 +90,7 @@ const FullBlog = ({ blog }: { blog: Blog }) => {
                         <motion.div
                             whileHover={{ x: 2 }}
                             className='text-slate-500 dark:text-slate-300'>
-                            Some catchy phrases
+                            This is the beginning..
                         </motion.div>
                     </div>
                 </motion.div>

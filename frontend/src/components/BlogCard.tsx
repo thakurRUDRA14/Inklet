@@ -10,6 +10,7 @@ import { useClickOutside } from "../hooks/useClickOutside";
 import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/authAtoms";
 import Spinner from "./Spinner";
+import { toast } from "react-toastify";
 
 interface BlogCardProps {
     authorId: string;
@@ -37,10 +38,10 @@ const BlogCard = ({ authorId, authorName, title, content, publishedDate, id, onD
     const handleDelete = async () => {
         try {
             await deleteBlog(id).unwrap();
-            alert("Deleted successfully");
+            toast("Blog deleted successfully");
             onDelete(id); // remove from UI
         } catch (error) {
-            alert("Failed to delete blog");
+            toast.error("Failed to delete blog");
         } finally {
             setShowOption(false);
         }

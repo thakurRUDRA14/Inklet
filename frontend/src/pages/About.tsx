@@ -89,7 +89,7 @@ const About = () => {
         },
         {
             title: "Others",
-            items: ["Zod", "React Router", "Lucide Icons", "Motion"],
+            items: ["Zod", "React Router", "Lucide Icons", "Motion", "React Toastify"],
             icon: (
                 <Zap
                     className='text-indigo-500'

@@ -6,6 +6,7 @@ import { useRecoilValue } from "recoil";
 import { userState } from "../recoil/authAtoms";
 import { useRef, useState } from "react";
 import { useClickOutside } from "../hooks/useClickOutside";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -38,7 +39,7 @@ const Navbar = () => {
         localStorage.removeItem("user");
         setShowUserActions(false);
         navigate("/");
-        alert("User logged out");
+        toast("User logged out");
     };
 
     return (

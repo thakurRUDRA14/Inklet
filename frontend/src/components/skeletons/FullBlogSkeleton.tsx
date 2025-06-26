@@ -6,7 +6,7 @@ const FullBlogSkeleton = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className='grid grid-cols-12 divide-y md:divide-x md:divide-y-0 divide-slate-300 dark:divide-slate-700 w-full lg:max-w-7xl min-h-[calc(100dvh-10rem)] mx-auto gap-10 px-4 xl:px-0 animate-pulse'>
+            className='grid grid-cols-12 divide-y md:divide-x md:divide-y-0 divide-slate-300 dark:divide-slate-700 w-full lg:max-w-7xl min-h-[calc(100dvh-10rem)] mx-auto gap-y-5 md:gap-x-10 px-4 xl:px-0 animate-pulse'>
             <div className='col-span-12 md:col-span-8 p-4'>
                 <div className='h-12 w-3/4 bg-slate-300 dark:bg-slate-700 rounded mb-4'></div>
                 <div className='h-5 w-1/2 bg-slate-200 dark:bg-slate-600 rounded mb-6'></div>

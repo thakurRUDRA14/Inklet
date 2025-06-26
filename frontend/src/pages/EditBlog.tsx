@@ -4,6 +4,7 @@ import Spinner from "../components/Spinner";
 import { useEffect, useState } from "react";
 import { useGetBlogByIdQuery, useUpdateBlogMutation } from "../features/api/blogApiSlice";
 import EditBlogSkeleton from "../components/skeletons/EditBlogSkeleton";
+import { toast } from "react-toastify";
 
 const EditBlog = () => {
     const navigate = useNavigate();
@@ -36,7 +37,7 @@ const EditBlog = () => {
 
     const handlePublish = async () => {
         if (!id || !title.trim() || !content.trim()) {
-            alert("Title and content are required");
+            toast.warn("Title and content are required");
             return;
         }
 
@@ -49,11 +50,11 @@ const EditBlog = () => {
                 },
             }).unwrap();
 
-            alert("Blog updated successfully");
+            toast("Blog updated successfully");
             navigate(`/blogs/${id}`);
         } catch (err) {
             console.error("Failed to update blog:", err);
-            alert("Failed to update blog");
+            toast.error("Failed to update blog");
         }
     };
 

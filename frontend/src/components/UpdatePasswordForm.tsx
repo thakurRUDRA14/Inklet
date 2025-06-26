@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Edit3, Check, X, EyeOff, Eye, Lock } from "lucide-react";
 import { useUpdatePasswordMutation } from "../features/api/userApiSlice";
 import type { ApiError, UpdatePassword } from "../types/user";
+import { toast } from "react-toastify";
 
 const UpdatePasswordForm = () => {
     const [isEditing, setIsEditing] = useState(false);
@@ -25,19 +26,19 @@ const UpdatePasswordForm = () => {
         const { newPassword, confirmNewPassword } = password;
 
         if (newPassword !== confirmNewPassword) {
-            alert("New password and confirm password do not match.");
+            toast.warn("New password and confirm password do not match.");
             return;
         }
 
         try {
             await updatePassword(password).unwrap();
             setIsEditing(false);
-            alert("Password updated successfully!");
+            toast("Password updated successfully!");
             setPassword({ oldPassword: "", newPassword: "", confirmNewPassword: "" });
         } catch (err) {
             const error = err as ApiError;
             const errMsg = error?.data?.message || "Failed to update password";
-            alert(errMsg);
+            toast.error(errMsg);
             console.error("Update password error:", err);
         }
     };

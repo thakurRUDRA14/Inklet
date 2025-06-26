@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useSignupUserMutation } from "../features/api/userApiSlice";
 import { useSetRecoilState } from "recoil";
 import { authTokenState, userState } from "../recoil/authAtoms";
+import { toast } from "react-toastify";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -33,7 +34,7 @@ const Signup = () => {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords don't match!");
+            toast.warn("Passwords don't match!");
             return;
         }
 
@@ -45,7 +46,7 @@ const Signup = () => {
             navigate("/blogs");
         } catch (err: any) {
             const message = err?.data?.message || err?.error || "Signup failed. Please try again.";
-            alert(message);
+            toast.error(message);
         }
     };
 

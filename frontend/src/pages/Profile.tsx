@@ -10,6 +10,7 @@ import UpdatePasswordForm from "../components/UpdatePasswordForm";
 import type { ApiError } from "../types/user";
 import EditableInputSkeleton from "../components/skeletons/EditableInputSkeleton";
 import Avatar from "../components/Avatar";
+import { toast } from "react-toastify";
 
 const Profile: React.FC = () => {
     const [profile, setProfile] = useState<UpdateProfile>({
@@ -36,13 +37,13 @@ const Profile: React.FC = () => {
                 [editingField]: tempValue,
             }).unwrap();
             setUser(updatedUser);
-            alert(`${editingField.charAt(0).toUpperCase() + editingField.slice(1)} updated successfully`);
+            toast(`${editingField.charAt(0).toUpperCase() + editingField.slice(1)} updated successfully`);
         } catch (err) {
             const error = err as ApiError;
             const errMsg =
                 error?.data?.message ||
                 (typeof error === "string" ? error : `Failed to update ${editingField.charAt(0).toUpperCase() + editingField.slice(1)}`);
-            alert(errMsg);
+            toast.error(errMsg);
             console.error("Update profile error:", err);
         }
     };

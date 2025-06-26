@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useSigninUserMutation } from "../features/api/userApiSlice";
 import { useSetRecoilState } from "recoil";
 import { authTokenState, userState } from "../recoil/authAtoms";
+import { toast } from "react-toastify";
 
 const Signin = () => {
     const navigate = useNavigate();
@@ -35,12 +36,12 @@ const Signin = () => {
             localStorage.setItem("userToken", userData.userToken);
             setToken(userData.userToken);
             setUser(userData.user);
-            alert("Login successful ✅");
+            toast("User Logged in successfully");
 
             navigate("/blogs");
         } catch (err: any) {
             const message = err?.data?.message || err?.error || "Login failed. Please try again.";
-            alert(message);
+            toast.error(message);
         }
     };
 
