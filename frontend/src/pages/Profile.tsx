@@ -90,8 +90,8 @@ const Profile: React.FC = () => {
     }
 
     return (
-        <div className='min-h-screen bg-gray-50 py-8'>
-            <div className='max-w-2xl mx-auto px-4'>
+        <div className='h-[calc(100vh-4rem)] bg-gray-50 py-8'>
+            <div className='max-w-2xl mx-auto px-6 sm:px-4'>
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

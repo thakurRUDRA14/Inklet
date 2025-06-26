@@ -19,7 +19,7 @@ const AuthForm = ({ type, formData, onInputChange, onSubmit, isLoading }: AuthFo
     return (
         <motion.div
             layout
-            className='h-screen flex justify-center flex-col bg-gradient-to-br from-gray-50 to-gray-100'>
+            className='h-full flex justify-center flex-col bg-gradient-to-br from-gray-50 to-gray-100'>
             <div className='flex justify-center'>
                 <motion.div
                     layoutId='auth-card'

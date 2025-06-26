@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicOnlyRoute from "./components/PublicOnlyRoute";
 import MyBlogs from "./pages/MyBlog";
+import Home from "./pages/Home";
 
 function App() {
     const { loading } = useHydrateUser();
@@ -24,22 +25,28 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route
-                    path='/signin'
-                    element={
-                        <PublicOnlyRoute>
-                            <Signin />
-                        </PublicOnlyRoute>
-                    }
-                />
-                <Route
-                    path='/signup'
-                    element={
-                        <PublicOnlyRoute>
-                            <Signup />
-                        </PublicOnlyRoute>
-                    }
-                />
+                <Route element={<MainLayout />}>
+                    <Route
+                        path='/'
+                        element={<Home />}
+                    />
+                    <Route
+                        path='/signin'
+                        element={
+                            <PublicOnlyRoute>
+                                <Signin />
+                            </PublicOnlyRoute>
+                        }
+                    />
+                    <Route
+                        path='/signup'
+                        element={
+                            <PublicOnlyRoute>
+                                <Signup />
+                            </PublicOnlyRoute>
+                        }
+                    />
+                </Route>
 
                 <Route
                     element={

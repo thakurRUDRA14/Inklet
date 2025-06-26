@@ -45,8 +45,8 @@ const Signin = () => {
     };
 
     return (
-        <div className='lg:grid lg:grid-cols-2 h-screen'>
-            <div>
+        <div className='lg:flex h-[calc(100vh-3.6rem)]'>
+            <div className='h-full lg:w-1/2'>
                 <AuthForm
                     type='signin'
                     formData={formData}
@@ -55,7 +55,7 @@ const Signin = () => {
                     isLoading={isLoading}
                 />
             </div>
-            <div className='hidden lg:block'>
+            <div className='hidden lg:block h-full w-1/2'>
                 <Quote />
             </div>
         </div>
